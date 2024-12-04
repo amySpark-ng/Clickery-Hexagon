@@ -170,7 +170,6 @@ export function openWindow(windowKey:windowKey) {
 				if (curDraggin && curDraggin == this) {
 					curDraggin.trigger("dragEnd")
 					setCurDraggin(null)
-					mouse.releaseAndPlay("cursor")
 				}
 			},
 
@@ -268,7 +267,6 @@ export function openWindow(windowKey:windowKey) {
 				if (window.isMouseInRange()) {
 					
 					if (window.isMouseInClickingRange()) {
-						mouse.grab();
 						window.pick();
 					}
 					

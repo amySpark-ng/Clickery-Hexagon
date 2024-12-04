@@ -9,6 +9,8 @@ THE B-UGS
 	* Might be related to their respective components meaning they suck hard ass
 	* IT'S DEFINETELY RELATED TO POWERUPS and when you click a lot of them at once (the components still suck hard ass fix if possible)
 
+- Clicking the folder object many times causes it to run away (for  some reason)
+
 FEATURES
 - Critical
 	* Balancing

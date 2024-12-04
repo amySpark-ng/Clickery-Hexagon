@@ -86,9 +86,6 @@ export function startAscending() {
 		window.close()
 	})
 
-	tween(hexagon.scaleIncrease, 0, 0.35, (p) => hexagon.scaleIncrease = p, easings.easeOutCubic)
-	tween(hexagon.stretchScaleIncrease, 0, 0.35, (p) => hexagon.stretchScaleIncrease = p, easings.easeOutCubic)
-	tween(hexagon.maxScaleIncrease, 0, 0.35, (p) => hexagon.maxScaleIncrease = p, easings.easeOutCubic)
 	tween(hexagon.opacity, 0, 0.35, (p) => hexagon.opacity = p, easings.easeOutCubic)
 
 	let blackBg = add([
@@ -236,11 +233,6 @@ export function endAscension() {
 	scoreManager.resetRun()
 
 	wait(0.25, () => {
-		tween(hexagon.scaleIncrease, 1, 0.25, (p) => hexagon.scaleIncrease = p, easings.easeOutQuint)
-		tween(hexagon.maxScaleIncrease, 1, 0.25, (p) => hexagon.maxScaleIncrease = p, easings.easeOutQuint)
-		tween(hexagon.stretchScaleIncrease, 1, 0.25, (p) => hexagon.stretchScaleIncrease = p, easings.easeOutQuint).onEnd(() => {
-			hexagon.interactable = true
-		})
 		hexagonIntro()
 	})
 

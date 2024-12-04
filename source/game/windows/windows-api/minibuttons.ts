@@ -5,11 +5,11 @@ import { bop, getPosInGrid } from "../../utils";
 import { mouse } from "../../additives";
 import { infoForWindows, manageWindow, buttonSpacing, openWindow, allObjWindows, windowKey, } from "./windowManaging";
 import { GameState } from "../../../gamestate";
-import { GameObj, Vec2 } from "kaplay";
+import { GameObj, PosComp, SpriteComp, SpriteData, Vec2 } from "kaplay";
 import { openWindowButton } from "./openWindowButton";
 import { folded, folderObj } from "./folderObj";
 import { destroyExclamation } from "../../unlockables/windowUnlocks";
-import { outsideWindowHover } from "../../hovers/outsideWindowHover";
+import { hovereable } from "../../hovers/hoverManaging";
 
 type minibuttonOpt = {
 	windowKey:windowKey
@@ -30,7 +30,7 @@ export function moveButtonToPos(minibutton:GameObj, index:number) {
 }
 
 export function addMinibutton(opts:minibuttonOpt) {
-	let quad;
+	let quad; // don't touch this
 
 	getSprite("bean")?.then(quady => {
 		quad = quady
@@ -46,8 +46,10 @@ export function addMinibutton(opts:minibuttonOpt) {
 		else destinedPosition = getMinibuttonPos(opts.taskbarIndex)
 	}
 
+	/** The string for the sprite of the minibutton */
+	const theSprite = `icon_${infoForWindows[opts.windowKey].icon ?? opts.windowKey.replace("Win", "")}`
 	const currentMinibutton = add([
-		sprite("white_noise"),
+		sprite(theSprite),
 		pos(opts.initialPosition),
 		anchor("center"),
 		area({ scale: vec2(0) }),
@@ -60,7 +62,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 		z(folderObj.z - 1),
 		dummyShadow(),
 		openWindowButton(),
-		outsideWindowHover(),
+		hovereable(1),
 		`${opts.windowKey}`,
 		"minibutton",
 		infoForWindows[opts.windowKey].icon == "extra" ? "extraMinibutton" : "",
@@ -161,7 +163,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 			},
 
 			pickFromTaskbar() {
-				mouse.grab()
 				this.pick()
 
 				this.layer = "mouse"
@@ -176,7 +177,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 			releaseDrop() {
 				curDraggin.trigger("dragEnd")
 				setCurDraggin(null)
-				mouse.releaseAndPlay("cursor")
 				this.layer = "ui"
 				this.z = folderObj.z - 1
 
@@ -216,8 +216,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 				movingTween.onEnd(() => {
 					let currentSlot = get(`slot_${this.taskbarIndex}`)[0]
 					currentSlot?.fadeOut(0.32).onEnd(() => currentSlot?.destroy())
-					if (this.isHovering() && !allObjWindows.isHoveringAWindow) this.startHoverFunction()
-					else this.endHoverFunction()
 				})
 
 				// reset their angles
@@ -228,8 +226,31 @@ export function addMinibutton(opts:minibuttonOpt) {
 		}
 	])
 
-	// SPRITE
-	currentMinibutton.use(sprite(`icon_${infoForWindows[opts.windowKey].icon || opts.windowKey.replace("Win", "")}`))
+	let isHovering = false
+
+	currentMinibutton.onUpdate(() => {
+		isHovering = currentMinibutton.isHovering() || currentMinibutton.dragging
+		if (isHovering) {
+			if (currentMinibutton.getCurAnim().name != "hover") {
+				if (currentMinibutton.extraMb) {
+					currentMinibutton.play(`${currentMinibutton.shut ? "shut" : "open"}_hover`)
+				}
+
+				else currentMinibutton.play("hover")
+			}
+		}
+
+		else {
+			if (currentMinibutton.getCurAnim().name != "default") {
+				if (currentMinibutton.extraMb) {
+					currentMinibutton.play(`${currentMinibutton.shut ? "shut" : "open"}_default`)
+				}
+
+				else currentMinibutton.play("default")
+			}
+		}
+	})
+
 	if (currentMinibutton.extraMb) {
 		if (currentMinibutton.shut) currentMinibutton.play("shut_default")
 		else currentMinibutton.play("open_default")
@@ -253,7 +274,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 		// -- to the right / ++ to the left
 
 		// will i use this function again?
-		function swap(sourceObj, sourceKey, targetObj, targetKey) {
+		function swap(sourceObj:any, sourceKey:string, targetObj:any, targetKey:string) {
 			let temp = sourceObj[sourceKey];
 			sourceObj[sourceKey] = targetObj[targetKey];
 			targetObj[targetKey] = temp;
@@ -278,31 +299,24 @@ export function addMinibutton(opts:minibuttonOpt) {
 		"u_size": vec2(quad.w, quad.h),
 	})))
 
-	currentMinibutton.startingHover(() => {
-		if (folded) return
+	currentMinibutton.onHover(() => {
+		if (folded || curDraggin || currentMinibutton.dragging) return
 		playSfx("hoverMiniButton", {detune: 100 * currentMinibutton.windowInfo.idx / 4})
 		tween(currentMinibutton.pos.y, currentMinibutton.destinedPosition.y - 5, 0.32, (p) => currentMinibutton.pos.y = p, easings.easeOutQuint)
 		tween(currentMinibutton.scale, vec2(1.05), 0.32, (p) => currentMinibutton.scale = p, easings.easeOutQuint)
-
-		if (currentMinibutton.extraMb) currentMinibutton.shut ? currentMinibutton.play("shut_hover") : currentMinibutton.play("open_hover")
-		else currentMinibutton.play("hover")
 
 		if (currentMinibutton.extraMb || currentMinibutton.dragging) return
 		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
 		tween(currentMinibutton.pos.x, newXPos, 0.32, (p) => currentMinibutton.pos.x = p, easings.easeOutQuint)
 	})
 
-	currentMinibutton.endingHover(() => {
-		if (folded) return
-		if (allObjWindows.isDraggingAWindow) return
+	currentMinibutton.onHoverEnd(() => {
+		if (folded || currentMinibutton.dragging) return
 		tween(currentMinibutton.pos.y, currentMinibutton.destinedPosition.y, 0.32, (p) => currentMinibutton.pos.y = p, easings.easeOutQuint)
 		tween(currentMinibutton.angle, 0, 0.32, (p) => currentMinibutton.angle = p, easings.easeOutQuint)
 		tween(currentMinibutton.scale, vec2(1), 0.32, (p) => currentMinibutton.scale = p, easings.easeOutQuint)
 		currentMinibutton.defaultScale = vec2(1.05)
 		
-		if (currentMinibutton.extraMb) currentMinibutton.shut ? currentMinibutton.play("shut_default") : currentMinibutton.play("open_default")
-		else currentMinibutton.play("default")
-
 		if (currentMinibutton.extraMb || currentMinibutton.dragging) return
 		
 		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
@@ -310,7 +324,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 	})
 
 	currentMinibutton.onPress(() => {
-		if (allObjWindows.isHoveringAWindow || allObjWindows.isDraggingAWindow) return
+		// if (allObjWindows.isHoveringAWindow || allObjWindows.isDraggingAWindow) return
 		currentMinibutton.click()
 	})
 	

@@ -2,7 +2,6 @@
 
 // A custom component for adding a dummy shadow that follows the object
 export function dummyShadow() {
-
 	return {
 		// Name of the component
 		id: "dummyShadow",
@@ -26,6 +25,7 @@ export function dummyShadow() {
 					this.shadow.pos.x = lerp(this.pos.x, xPos, 0.75)
 					this.shadow.pos.y = lerp(this.shadow.pos.y, this.pos.y + 8, 0.75)
 					this.shadow.angle = lerp(this.shadow.angle, this.angle, 0.9)
+					this.shadow.sprite = this.sprite;
 				})
 			
 				this.on("dragEnd", () => {

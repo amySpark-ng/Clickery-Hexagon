@@ -147,7 +147,6 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 	button.onClick(() => {
 		if (!winParent.active) return;
 		button.pick()
-		mouse.grab()
 
 		winParent.canClose = false
 	})
@@ -159,11 +158,9 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 
 		if (button.isHovering() == true) {
 			button.startHoverFunction()
-			mouse.releaseAndPlay("point")
 		}
 
 		else {
-			mouse.releaseAndPlay("cursor")
 			button.endHoverFunction()
 		}
 

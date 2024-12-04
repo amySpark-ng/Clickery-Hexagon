@@ -6,7 +6,7 @@ import { arrToColor, bop, formatNumber, formatTime, getPosInGrid, getPositionOfS
 import { positionSetter } from "./plugins/positionSetter";
 import { checkForUnlockable } from "./unlockables/achievements";
 import { addTooltip } from "./additives";
-import { outsideWindowHover } from "./hovers/outsideWindowHover";
+import { hovereable } from "./hovers/hoverManaging";
 
 class Powerup {
 	sprite: string;
@@ -282,7 +282,7 @@ export function addPowerupLog(powerupType:powerupName) {
 		
 		bg.height = lerp(bg.height, textHeight, 0.5)
 		bg.width = lerp(bg.width, textWidth, 0.5)
-		bg.radius = lerp(bg.radius, radius, 0.5)
+		// bg.radius = lerp(bg.radius, radius, 0.5)
 	})
 
 	tween(0, bgOpacity, 0.5, (p) => bg.opacity = p, easings.easeOutQuad)
@@ -341,7 +341,7 @@ export function spawnPowerup(opts?:powerupOpt) {
 		waver({ wave_speed: 1.25, maxAmplitude: 5, minAmplitude: 0 }),
 		area(),
 		timer(),
-		outsideWindowHover(),
+		hovereable(100),
 		"powerup",
 		{
 			type: opts.type,
@@ -470,11 +470,11 @@ export function spawnPowerup(opts?:powerupOpt) {
 	tween(0, 1, 0.2, (p) => powerupObj.opacity = p, easings.easeOutBack)
 
 	// events
-	powerupObj.startingHover(() => {
+	powerupObj.onHover(() => {
 		powerupObj.startHover()
 	})
 
-	powerupObj.endingHover(() => {
+	powerupObj.onHoverEnd(() => {
 		powerupObj.endHover()
 	})
 

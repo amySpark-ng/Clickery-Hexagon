@@ -1,15 +1,14 @@
 import { GameState } from "../../../gamestate";
 import { curDraggin } from "../.././plugins/drag";
 import { playSfx } from "../../../sound";
-import { mouse } from "../../additives";
 import { ascension } from "../../ascension/ascension";
 import { blendColors, bop, sortedTaskbar } from "../../utils";
 import { setTimeSinceSkip, timeSinceSkip } from "../musicWindow";
 import { addMinibutton, getMinibuttonPos, miniButtonXarea, miniButtonYarea, moveButtonToPos,  } from "./minibuttons";
 import { manageWindow, allObjWindows, windowKey } from "./windowManaging";
-import { outsideWindowHover } from "../../hovers/outsideWindowHover";
 import { GameObj } from "kaplay";
 import { allPowerupsInfo } from "../../powerups";
+import { hovereable } from "../../hovers/hoverManaging";
 
 export let folderObj:GameObj;
 export let folded = true;
@@ -41,7 +40,7 @@ export function addFolderObj() {
 		z(0),
 		scale(),
 		anchor("center"),
-		outsideWindowHover(),
+		hovereable(2),
 		"folderObj",
 		{
 			defaultScale: vec2(1.2),

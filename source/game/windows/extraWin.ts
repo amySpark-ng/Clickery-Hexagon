@@ -105,7 +105,6 @@ export function addGridButton(windowKey:windowKey) {
 				if (curDraggin == this) {
 					curDraggin.trigger("dragEnd")
 					setCurDraggin(null)
-					mouse.releaseAndPlay("cursor")
 					gridButton.layer = "windows"
 
 					// wtf???
@@ -240,7 +239,6 @@ export function addGridButton(windowKey:windowKey) {
 
 		destroyExclamation(gridButton)
 		gridButton.layer = "mouse"
-		mouse.grab()
 		gridButton.pick()
 		playSfx("plap")
 	})

@@ -62,42 +62,24 @@ export function addMouse() {
 			intro: false,
 			speed: 5000, // 5000 is the optimal for actual mouse movement
 			grabbing: false,
-			grab() {
-				this.grabbing = true
-				mouse.play("grab")
-			},
-
-			pinch(theColor?:Color) {
-				const theCursor = this
-				
-				let pinch = add([
-					sprite("pinch"),
-					layer("mouse"),
-					z(theCursor.z - 1),
-					anchor("center"),
-					pos(mousePos()),
-					color(theColor ?? WHITE),
-					rotate(0),
-				])
-
-				if (theCursor.getCurAnim() != null) {
-					if (theCursor.getCurAnim().name == "cursor") pinch.angle = -32
-					pinch.pos.x -= 12
-					pinch.pos.y -= 14
-				}
-
-				pinch.play("pinching")
-				pinch.onAnimEnd((anim) => {
-					if (anim == "pinching") pinch.destroy()
-				})
-			},
-
-			releaseAndPlay(newAnim:string) {
-				this.grabbing = false
-				mouse.play(newAnim)
-			},
-
 			update() {
+				const allHoverObjs = get("hovereable", { recursive: true })
+
+				allHoverObjs.forEach((hoverObj) => {
+					if (!hoverObj.isHovering()) {
+						if (hoverObj.dragging) this.play("grab")
+						else {
+							if (allHoverObjs.some((otherObj) => otherObj.isHovering())) return
+							else this.play("cursor")
+						}
+					}
+
+					else {
+						if (hoverObj.dragging || isMouseDown("left")) this.play("grab")
+						else this.play("point")
+					}
+				})
+				
 				this.pos = lerp(this.pos, mousePos(), 0.9)
 			}
 		}

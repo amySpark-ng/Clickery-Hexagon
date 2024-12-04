@@ -1,4 +1,3 @@
-
 import { GameState, scoreManager } from "../gamestate.ts";
 import { scoreText, spsText } from "./uicounters.ts";
 import { blendColors, getRandomDirection, saveColorToColor } from "./utils.ts";
@@ -13,6 +12,7 @@ import { ROOT } from "../main.ts";
 import { outsideWindowHover } from "./hovers/outsideWindowHover.ts";
 import { mouse } from "./additives.ts";
 import { isWindowUnlocked } from "./unlockables/windowUnlocks.ts";
+import { hovereable } from "./hovers/hoverManaging.ts";
 
 export let clickVars = {
 	clicksPerSecond: 0, // to properly calculate sps
@@ -26,15 +26,19 @@ export const COMBO_MINCLICKS = 25;
 export const COMBO_MAXCLICKS = 160;
 export const COMBO_MAX = 5
 
-const hoverRotSpeedIncrease = 0.01 * 0.25
-let maxRotSpeed = 10
-
 let consecutiveClicksWaiting = null;
 let spsUpdaterTimer = 0; // to properly calculate sps
 
-export let hexagon:any;
+export let hexagon:ReturnType<typeof createHexagon>;
+
+function playClickSound() { return playSfx("clickPress", { detune: rand(-75, 75) }) } 
+function playClickReleaseSound() { return playSfx("clickRelease", { detune: rand(-75, 75) }) } 
 
 export function addHexagon() {
+	hexagon = createHexagon()
+}
+
+function createHexagon() {
 	// reset variables
 	scoreManager.combo = 1
 
@@ -43,16 +47,15 @@ export function addHexagon() {
 	clickVars.comboDropped = true
 	clickVars.maxedCombo = false
 	spsUpdaterTimer = 0
-	maxRotSpeed = 10
 
-	hexagon = add([
+	const hexagon = add([
 		sprite(GameState.settings.panderitoMode ? "panderito" : "hexagon"),
 		pos(center().x, center().y + 55),
 		anchor("center"),
 		rotate(0),
 		scale(),
 		opacity(1),
-		outsideWindowHover(),
+		hovereable(0),
 		color(saveColorToColor(GameState.settings.hexColor)),
 		area({
 			shape: new Polygon([
@@ -70,58 +73,66 @@ export function addHexagon() {
 		layer("hexagon"),
 		"hexagon",
 		{
-			smallestScale: 0.985,
-			biggestScale: 1.0015,
-			defaultScale: vec2(1),
-			scaleIncrease: 1,
-			maxScaleIncrease: 1,
-			stretchScaleIncrease: 1,
 			interactable: true,
 			isBeingClicked: false,
-			rotationSpeed: 0.01,
-			clickPressTween: null,
-			stretched: true,
-			update() {
-				if (this.interactable) {
-					if (GameState.settings.panderitoMode) this.area.scale = vec2(0.65, 1.1)
-					else this.area.scale = vec2(1.08)
-				}
-				else this.area.scale = vec2(0)
-				
-				if (this.isBeingHovered) maxRotSpeed = 4.75
-				else maxRotSpeed = 4
-				this.rotationSpeed = map(GameState.score, 0, scoreManager.scoreYouGetNextManaAt(), 0.01, maxRotSpeed)
-				this.rotationSpeed = clamp(this.rotationSpeed, 0.01, maxRotSpeed)
-				this.angle += this.rotationSpeed
-				
-				this.scale.x = wave((this.smallestScale * this.scaleIncrease), (this.biggestScale * this.scaleIncrease), time() * 1.15)
-				this.scale.y = wave((this.smallestScale * this.scaleIncrease) * this.stretchScaleIncrease, (this.biggestScale * this.scaleIncrease) * this.stretchScaleIncrease, time() * 1.15)
+			isBeingFakeClicked: false,
 
-				if (this.angle >= 360) {
-					this.angle = 0
-				}
-			},
-			
 			clickPress() {
-				this.maxScaleIncrease = 0.98
-				this.clickPressTween = tween(this.scaleIncrease, this.maxScaleIncrease, 0.35, (p) => this.scaleIncrease = p, easings.easeOutQuint)
+				playClickSound()
 				this.isBeingClicked = true
-				mouse.grab()
-				playSfx("clickPress", {detune: rand(-50, 50)})
-				
 				GameState.stats.timesClicked++
 			},
 
-			clickRelease() {
-				this.maxScaleIncrease = this.isBeingHovered ? 1.05 : 1
-				
-				this.clickPressTween?.cancel()
-				tween(this.scaleIncrease, this.maxScaleIncrease, 0.35, (p) => this.scaleIncrease = p, easings.easeOutQuint)
+			clickReleaseAnim() {
 				this.isBeingClicked = false
-				clickVars.clicksPerSecond++
 
-				if (hexagon.isBeingHovered) mouse.releaseAndPlay("point")
-				else mouse.releaseAndPlay("cursor")
+				playClickReleaseSound()
+
+				if (GameState.settings.panderitoMode) {
+					let smallpanderito = add([
+						sprite("smallpanderito"),
+						anchor("center"),
+						pos(mouse.pos),
+						rotate(rand(0, 360)),
+						body(),
+						area({ collisionIgnore: ["smallpanderito", "autoCursor"] }),
+						opacity(1),
+						scale(rand(1, 2.5)),
+						layer("ui"),
+						color(),
+						"smallpanderito",
+					])
+					smallpanderito.gravityScale = 0.5
+
+					smallpanderito.vel.x = rand(30, 75)
+					
+					let randomColor = rgb(rand(0, 255), rand(0, 255), rand(0, 255))
+					smallpanderito.color = blendColors(smallpanderito.color, randomColor, 0.1)
+					if (chance(0.5)) {
+						tween(smallpanderito.angle, smallpanderito.angle + 90, 1, (p) => smallpanderito.angle = p, )
+					}
+
+					else {
+						tween(smallpanderito.angle, smallpanderito.angle - 90, 1, (p) => smallpanderito.angle = p, )
+						smallpanderito.vel.x *= -1
+					}
+
+					wait(0.5, () => {
+						tween(smallpanderito.opacity, 0, 0.5, (p) => smallpanderito.opacity = p, easings.easeOutQuint)
+					})
+				
+					// ok you're done
+					wait(1, () => {
+						destroy(smallpanderito)
+					})
+				}
+
+				this.trigger("clickrelease")
+			},
+
+			clickRelease() {
+				this.clickReleaseAnim()
+				clickVars.clicksPerSecond++
 
 				// # combo stuff
 				clickVars.constantlyClicking = true
@@ -261,55 +272,6 @@ export function addHexagon() {
 						addCriticalParticles(isBigCrit)
 					}
 				}
-
-				// other stuff
-				tween(scoreText.scaleIncrease, 1.05, 0.2, (p) => scoreText.scaleIncrease = p, easings.easeOutQuint).onEnd(() => {
-					tween(scoreText.scaleIncrease, 1, 0.2, (p) => scoreText.scaleIncrease = p, easings.easeOutQuint)
-				})
-
-				const tune = rand(-50, isCritical == true ? 100 : 50) 
-				playSfx("clickRelease", {detune: tune})
-
-				if (GameState.settings.panderitoMode) {
-					let smallpanderito = add([
-						sprite("smallpanderito"),
-						anchor("center"),
-						pos(mouse.pos),
-						rotate(rand(0, 360)),
-						body(),
-						area({ collisionIgnore: ["smallpanderito", "autoCursor"] }),
-						opacity(1),
-						scale(rand(1, 2.5)),
-						layer("ui"),
-						color(),
-						"smallpanderito",
-					])
-					smallpanderito.gravityScale = 0.5
-
-					smallpanderito.vel.x = rand(30, 75)
-					
-					let randomColor = rgb(rand(0, 255), rand(0, 255), rand(0, 255))
-					smallpanderito.color = blendColors(smallpanderito.color, randomColor, 0.1)
-					if (chance(0.5)) {
-						tween(smallpanderito.angle, smallpanderito.angle + 90, 1, (p) => smallpanderito.angle = p, )
-					}
-
-					else {
-						tween(smallpanderito.angle, smallpanderito.angle - 90, 1, (p) => smallpanderito.angle = p, )
-						smallpanderito.vel.x *= -1
-					}
-
-					wait(0.5, () => {
-						tween(smallpanderito.opacity, 0, 0.5, (p) => smallpanderito.opacity = p, easings.easeOutQuint)
-					})
-				
-					// ok you're done
-					wait(1, () => {
-						destroy(smallpanderito)
-					})
-				}
-
-				this.trigger("clickrelease")
 			},
 
 			autoClick() {
@@ -375,16 +337,16 @@ export function addHexagon() {
 						autoCursor.play("grab")
 						
 						// clickPress manual false
-						tween(hexagon.scaleIncrease, this.maxScaleIncrease * 0.98, 0.35, (p) => hexagon.scaleIncrease = p, easings.easeOutQuint)
-						playSfx("clickPress", {detune: rand(-50, 50)})
+						// this is for the animation thing
+						this.isBeingFakeClicked = true
+						playClickSound()
 
 						wait(0.15, () => {
 							autoCursor.play("point")
 			
-							// clickRelease manual false
-							tween(hexagon.scaleIncrease, hexagon.maxScaleIncrease, 0.35, (p) => hexagon.scaleIncrease = p, easings.easeOutQuint)
-							playSfx("clickRelease", {detune: rand(-50, 50)})
-							
+							this.isBeingFakeClicked = false
+							playClickReleaseSound()
+
 							addPlusScoreText({
 								pos: autoCursor.pos,
 								value: scoreManager.scorePerAutoClick(),
@@ -425,38 +387,80 @@ export function addHexagon() {
 		}
 	])
 
-	hexagon.startingHover(() => {
-		tween(hexagon.scaleIncrease, 1.05, 0.35, (p) => hexagon.scaleIncrease = p, easings.easeOutCubic);
-		hexagon.rotationSpeed += hoverRotSpeedIncrease
-		hexagon.maxScaleIncrease = 1.05
-	})
+	let maxRotationSpeed = 4
+	let rotationSpeed = 0
+	/** How much scale is increased on hover */
+	let scaleHoverIncrease = vec2(1.1)
 
-	hexagon.endingHover(() => {
-		tween(hexagon.scaleIncrease, 1, 0.35, (p) => hexagon.scaleIncrease = p, easings.easeOutCubic);
-		hexagon.isBeingClicked = false
-		hexagon.rotationSpeed = 0
-		hexagon.maxScaleIncrease = 1
+	hexagon.onUpdate(() => {
+		// spinning stuff
+		if (hexagon.angle >= 360) {
+			hexagon.angle = 0
+		}
+		rotationSpeed = mapc(GameState.score, 0, scoreManager.scoreYouGetNextManaAt(), 0.01, maxRotationSpeed)
+		hexagon.angle += rotationSpeed
+
+		// some hover stuff
+		if (hexagon.isHovering()) {
+			hexagon.isBeingClicked = isMouseDown("left")
+			
+			if (hexagon.isBeingFakeClicked && scaleHoverIncrease != vec2(1)) {
+				scaleHoverIncrease = vec2(1)
+			}
+
+			else {
+				scaleHoverIncrease = vec2(1.1)
+			}
+
+			if (hexagon.isBeingClicked) {
+				hexagon.scale = lerp(hexagon.scale, scaleHoverIncrease.scale(0.9), 0.25)
+			}
+			
+			else {
+				hexagon.scale = lerp(hexagon.scale, scaleHoverIncrease, 0.25)
+			}
+			
+			maxRotationSpeed = 4.75
+		}
+
+		else {
+			if (hexagon.isBeingClicked) hexagon.isBeingClicked = false
+			maxRotationSpeed = 4
+			hexagon.scale.x = lerp(hexagon.scale.x, 1, 0.25)
+			hexagon.scale.y = lerp(hexagon.scale.y, 1, 0.25)
+		}
+	
+		// panderito
+		if (GameState.settings.panderitoMode && hexagon.sprite != "panderito") {
+			hexagon.sprite = "panderito"
+			hexagon.area.scale = vec2(0.65, 1.1)
+		}
+
+		else {
+			hexagon.sprite = "hexagon"
+			hexagon.area.scale = vec2(1.08)
+		}
 	})
 
 	hexagon.on("startAnimEnd", () => {
 		hexagon.use(waver({ maxAmplitude: 5, wave_speed: 1 }))
-		hexagon.startWave()
+		// hexagon.startWave()
 	})
 
 	hexagon.onClick(() => {
-		if (hexagon.isBeingHovered) {
+		if (hexagon.isHovering()) {
 			hexagon.clickPress()
 		}
 	})
 	
 	hexagon.onMouseRelease("left", () => {
-		if (hexagon.isBeingHovered) {
+		if (hexagon.isHovering()) {
 			hexagon.clickRelease()
 		}
 	})
 
 	hexagon.onMousePress("right", () => {
-		if (isWindowUnlocked("hexColorWin") && hexagon.isBeingHovered) manageWindow("hexColorWin")
+		if (isWindowUnlocked("hexColorWin") && hexagon.isHovering()) manageWindow("hexColorWin")
 	})
 
 	// score setting stuff
@@ -471,12 +475,6 @@ export function addHexagon() {
 
 	ROOT.on("scoreGained", (amount) => {
 		checkForUnlockable()
-	})
-
-	loop(2.5, () => {
-		hexagon.stretched = !hexagon.stretched
-		if (hexagon.stretched) tween(hexagon.stretchScaleIncrease, 0.98, 2, (p) => hexagon.stretchScaleIncrease = p, easings.linear)
-		else tween(hexagon.stretchScaleIncrease, 1.01, 2, (p) => hexagon.stretchScaleIncrease = p, easings.linear)
 	})
 
 	// COMBO STUFF

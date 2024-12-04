@@ -11,11 +11,11 @@ export function openWindowButton() {
 		add() {
 			let waitingHold = wait(0, () => {})
 			this.onClick(() => {
-				if (!this.isBeingHovered) return
+				if (!this.isHovering()) return
 			
 				waitingHold.cancel()
 				waitingHold = wait(timeForHold, () => {
-					if (!this.isBeingHovered) return
+					if (!this.isHovering()) return
 					if (curDraggin) {
 						return
 					}
@@ -33,7 +33,7 @@ export function openWindowButton() {
 				// was not being dragged
 				else {
 					waitingHold.cancel()
-					if (!this.isBeingHovered) return
+					if (!this.isHovering()) return
 					if (curDraggin) return
 	
 					// click function

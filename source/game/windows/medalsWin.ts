@@ -433,7 +433,6 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 	elevator.onPressClick(() => {
 		if (elevator.isBeingHovered == true) {
 			isDragging = true
-			mouse.grab()
 			// only doing it so it counts as it's there something being dragged
 			setCurDraggin(elevator)
 		}
@@ -449,7 +448,6 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 				elevator.endHoverAnim()
 			}
 
-			mouse.releaseAndPlay("cursor")
 		}
 	});
 
