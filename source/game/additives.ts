@@ -76,7 +76,10 @@ export function addMouse() {
 
 					else {
 						if (hoverObj.dragging || isMouseDown("left")) this.play("grab")
-						else this.play("point")
+						else {
+							if (!hoverObj.is("ignorepoint")) this.play("point")
+							else this.play("cursor")
+						}
 					}
 				})
 				

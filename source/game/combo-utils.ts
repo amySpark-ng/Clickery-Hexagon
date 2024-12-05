@@ -156,9 +156,14 @@ export function addPlusScoreText(opts:plusScoreOpts) {
 
 	plusScoreText.text = `+${formatNumber(opts.value)}`
 	if (scoreManager.combo > 1 && !opts.cursorRelated) {
-		plusScoreText.text = insertAtStart(plusScoreText.text, "[combo]")
+		function addStyleToText(str: string, tag: string) {
+			// if the str is something like "hello world" and the tag is something like "combo"
+			// then it should return something like "[combo]hello world[/combo]"
+			return insertAtStart(str, `[${tag}]`) + `[/${tag}]`;
+		}
+		
+		plusScoreText.text = addStyleToText(plusScoreText.text, "combo")
 		// if (scoreManager.combo > 1) plusScoreText.text += `x${Math.floor(scoreManager.combo)}`
-		plusScoreText.text += `[/combo]`;
 	}
 	
 	plusScoreText.pos.x = opts.pos.x + 2

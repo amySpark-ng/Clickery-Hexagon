@@ -230,6 +230,11 @@ export function addMinibutton(opts:minibuttonOpt) {
 
 	currentMinibutton.onUpdate(() => {
 		isHovering = currentMinibutton.isHovering() || currentMinibutton.dragging
+		
+		if (currentMinibutton.isHovering() && !currentMinibutton.dragging) {
+			currentMinibutton.angle	= lerp(currentMinibutton.angle, wave(-8, 8, time() * 3), 0.6)
+		}
+		
 		if (isHovering) {
 			if (currentMinibutton.getCurAnim().name != "hover") {
 				if (currentMinibutton.extraMb) {

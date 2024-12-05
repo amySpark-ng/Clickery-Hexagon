@@ -1,14 +1,37 @@
-import { AreaComp, Comp, GameObj } from "kaplay";
+import { AreaComp, Comp, GameObj, Vec2 } from "kaplay";
 import { dragComp } from "../plugins/drag";
 
 export interface hovereableComp extends Comp {
 	clickIndex: number;
 }
 
+export interface smartAreaComp extends Comp {
+	isHovering(): boolean,
+	area: { scale: Vec2 },
+}
+
+/** Like area but doesn't check for scale comp */
+export function smartArea() : smartAreaComp {
+	return {
+		id: "smartArea",
+		require: ["pos"],
+		area: { scale: vec2(1) },
+		isHovering() {
+			const topLeftPos = this.screenPos().sub(vec2(this.width / 2, this.height / 2))
+
+			const theRect = new Rect(topLeftPos, this.width * this.area.scale.x, this.height * this.area.scale.y)
+			return theRect.contains(mousePos())
+		},
+		
+		update() {
+			
+		}
+	}
+}
+
 export function hovereable(clickIndex: number) : hovereableComp {
 	return {
 		id: "hovereable",
-		require: ["area", "pos"],
 		clickIndex: clickIndex,
 	}
 }

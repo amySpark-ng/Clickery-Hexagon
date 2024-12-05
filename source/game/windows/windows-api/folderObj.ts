@@ -140,7 +140,6 @@ export function addFolderObj() {
 
 	theFolderObj.onClick(() => {
 		folderObj.manageFold()
-		folderObj.deleteSlots()
 		bop(folderObj)
 	})
 

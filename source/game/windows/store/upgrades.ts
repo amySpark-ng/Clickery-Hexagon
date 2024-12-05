@@ -5,7 +5,7 @@ import { addTooltip } from "../../additives";
 import { insideWindowHover } from "../../hovers/insideWindowHover";
 import { positionSetter } from "../../plugins/positionSetter";
 import { blendColors, bop, formatNumber, getPositionOfSide, getRandomDirection, insertAtStart, parseAnimation } from "../../utils";
-import { priceAscensionMultiplier } from "./storeElements";
+import { addStoreElement, priceAscensionMultiplier } from "./storeElements";
 
 const tooltipLerp = 0.65
 
@@ -33,7 +33,7 @@ export function isUpgradeBought(upgradeId:string):boolean {
 	return (GameState.upgradesBought.includes(upgradeId))
 }
 
-export function addUpgrades(elementParent) {
+export function addUpgrades(elementParent:ReturnType<typeof addStoreElement>) {
 	let winParent = elementParent.parent;
 	
 	let initialPos = vec2(-27.5, -31.5)
@@ -58,10 +58,10 @@ export function addUpgrades(elementParent) {
 			color(newColor),
 			anchor("center"),
 			scale(1),
+			rotate(0),
 			z(winParent.z + 1),
 			area({ scale: vec2(1.15, 1.15) }),
 			outline(5, BLACK),
-			insideWindowHover(elementParent.parent),
 			"upgrade",
 			{
 				type: elementParent.is("clickersElement") ? "k_" : "c_",
@@ -71,6 +71,7 @@ export function addUpgrades(elementParent) {
 				freq: null, 
 				upgradeId: "",
 				price: 0,
+				tooltip: null,
 				
 				boughtProgress: 0,
 				
@@ -226,17 +227,23 @@ export function addUpgrades(elementParent) {
 			
 			return tooltip;
 		}
-		
-		upgradeObj.startingHover(() => {
-			upgradeObj.parent.endHoverFunction()
-			
-			// animation
-			tween(upgradeObj.parent.opacity, 0.9, 0.15, (p) => upgradeObj.parent.opacity = p, easings.easeOutQuad)
-			tween(upgradeObj.scale, vec2(1.1), 0.15, (p) => upgradeObj.scale = p, easings.easeOutQuad)
-		
+
+		upgradeObj.onUpdate(() => {
+			if (upgradeObj.isHovering()) {
+				upgradeObj.parent.opacity = lerp(upgradeObj.parent.opacity, 0.5, 0.15)
+				upgradeObj.parent.scale = lerp(upgradeObj.parent.scale, vec2(1), 0.15)
+			}
+
+			else {
+				upgradeObj.parent.opacity = lerp(upgradeObj.parent.opacity, 1.0, 0.15)
+			}
+		})
+
+		upgradeObj.onHover(() => {
 			// tooltips
 			let textInBlink = upgradeObj.value != null ? `+${upgradeObj.value}` : `Clicks every ${upgradeObj.freq} ${upgradeObj.freq > 1 ? "seconds" : "second"}`;
-			
+			debug.log("hovered")
+
 			if (!isUpgradeBought(upgradeObj.upgradeId)) {
 				if (upgradeObj.tooltip == null) {
 					upgradeTooltip = addPriceTooltip()
@@ -245,20 +252,15 @@ export function addUpgrades(elementParent) {
 			}
 		})
 
-		upgradeObj.endingHover(() => {
-			upgradeObj.parent.startHoverFunction()
-			
-			tween(upgradeObj.parent.opacity, 1, 0.15, (p) => upgradeObj.parent.opacity = p, easings.easeOutQuad)
-
-			if (!isUpgradeBought(upgradeObj.upgradeId) && upgradeObj.boughtProgress > 0 && GameState.score >= upgradeObj.price) upgradeObj.dropBuy()
-			tween(upgradeObj.scale, vec2(1), 0.15, (p) => upgradeObj.scale = p, easings.easeOutQuad)
-			
+		upgradeObj.onHoverEnd(() => {
 			if (upgradeObj.tooltip != null) {
 				upgradeObj.tooltip?.end()
 				upgradeObj.manageBlinkText().end()
 			}
 
-			// cursor animation is managed by the store element in that case
+			if (!isUpgradeBought(upgradeObj.upgradeId) && upgradeObj.boughtProgress > 0 && GameState.score >= upgradeObj.price) {
+				upgradeObj.dropBuy()
+			}
 		})
 		
 		upgradeObj.onClick(() => {

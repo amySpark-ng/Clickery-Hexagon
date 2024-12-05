@@ -10,6 +10,9 @@ THE B-UGS
 	* IT'S DEFINETELY RELATED TO POWERUPS and when you click a lot of them at once (the components still suck hard ass fix if possible)
 
 - Clicking the folder object many times causes it to run away (for  some reason)
+- Areas will stutter when hovering over 2 at the same time?? (has to do with scale probably)
+	* Store window button and window probably
+- Figure out a way to make it so scale doesn't affect area
 
 FEATURES
 - Critical

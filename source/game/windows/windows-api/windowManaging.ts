@@ -21,6 +21,7 @@ import { medalsWinContent } from "../medalsWin.ts";
 import { hexColorWinContent } from "../color/hexColorWin.ts";
 import { bgColorWinContent } from "../color/bgColorWin.ts";
 import { leaderboardsWinContent } from "../leaderboardsWin.ts";
+import { hovereable } from "../../hovers/hoverManaging.ts";
 
 export let infoForWindows = {}
 
@@ -140,7 +141,9 @@ export function openWindow(windowKey:windowKey) {
 		area({ scale: vec2(1, 1) }),
 		timer(),
 		color(),
+		hovereable(10),
 		"window",
+		"ignorepoint",
 		`${windowKey}`,
 		{
 			idx: infoForWindows[windowKey].idx,
@@ -283,6 +286,11 @@ export function openWindow(windowKey:windowKey) {
 		}
 	})
 
+	windowObj.onUpdate(() => {
+		const clickIndexAdd = windowObj.focused ? 0 : get("window").findIndex(obj => obj == windowObj)
+		windowObj.clickIndex = 10 + clickIndexAdd
+	})
+
 	windowObj.onMouseRelease(() => {
 		if (windowObj.dragging) windowObj.releaseDrop() 
 	})
@@ -291,16 +299,6 @@ export function openWindow(windowKey:windowKey) {
 		// if window is active and (window isn't an extra window and curDragging isn't gridMinibutton)
 		// can't close if is extra window and is dragging a button
 		if (windowObj.canClose == true && windowObj.active && curDraggin != windowObj && !(windowObj.is("extraWin") && curDraggin?.is("gridMiniButton"))) windowObj.close()
-	})
-
-	windowObj.onMouseMove(() => {
-		// if (windowObj.isHovering()) {
-		// 	if (get("outsideWindowHover").filter(obj => obj.isHovering() && obj.isBeingHovered).length > 0) {
-		// 		get("outsideWindowHover").filter(obj => obj.isHovering() && obj.isBeingHovered).forEach((theObj) => {
-		// 			theObj.trigger("cursorEnterWindow", windowObj)
-		// 		})
-		// 	} 
-		// }
 	})
 
 	// activate
@@ -352,7 +350,9 @@ export function openWindow(windowKey:windowKey) {
 	return windowObj;
 }
 
-export function emptyWinContent(winParent) {
+export type WindowGameObj = ReturnType<typeof openWindow>
+
+export function emptyWinContent(winParent:WindowGameObj) {
 	winParent.add([
 		text(`THIS WINDOW IS EMPTY\nThis is the ${winParent.windowKey}`, {
 			align: "center"

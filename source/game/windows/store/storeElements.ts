@@ -6,8 +6,9 @@ import { bop, formatNumber, getPrice, getRandomDirection, getVariable, percentag
 import { addTooltip } from "../../additives"
 import { allPowerupsInfo, powerupTypes, spawnPowerup } from "../../powerups"
 import { isHoveringUpgrade, storeElements, storePitchJuice } from "./storeWin"
-import { insideWindowHover } from "../../hovers/insideWindowHover"
 import { isAchievementUnlocked, unlockAchievement } from "../../unlockables/achievements"
+import { hovereable, smartArea } from "../../hovers/hoverManaging"
+import { WindowGameObj } from "../windows-api/windowManaging"
 
 export let storeElementsInfo = {
 	"clickersElement": { 
@@ -248,17 +249,17 @@ type storeElementOpt = {
 	pos: Vec2,
 }
 
-export function addStoreElement(winParent:any, opts:storeElementOpt) {
+export function addStoreElement(winParent:WindowGameObj, opts:storeElementOpt) {
 	const btn = winParent.add([
 		sprite(opts.type),
 		pos(opts.pos),
-		area(),
+		smartArea(),
 		color(),
 		opacity(1),
 		scale(1),
 		anchor("center"),
 		z(winParent.z + 1),
-		insideWindowHover(winParent),
+		hovereable(0),
 		"storeElement",
 		`${opts.type}`,
 		{
@@ -329,6 +330,8 @@ export function addStoreElement(winParent:any, opts:storeElementOpt) {
 		}
 	])
 
+	btn.clickIndex = btn.parent.clickIndex
+
 	// # EVENTS
 	let tooltip = null;
 	if (opts.type == "powerupsElement" && GameState.hasUnlockedPowerups == false) {
@@ -362,8 +365,6 @@ export function addStoreElement(winParent:any, opts:storeElementOpt) {
 		else amountToBuy = 1
 
 		// area
-		btn.area.scale = vec2(1 / btn.scale.x, 1 / btn.scale.y)
-
 		if (opts.type == "powerupsElement" && GameState.hasUnlockedPowerups == false) {
 			btn.price = priceAscensionMultiplier(storeElementsInfo.powerupsElement.unlockPrice, storeElementsInfo.powerupsElement.percentageIncrease / 100)
 		}
@@ -385,17 +386,18 @@ export function addStoreElement(winParent:any, opts:storeElementOpt) {
 			}) * priceMultiplier
 		}
 	})
-	
-	// ### HOVERS
-	// the component checks for the window being active
-	btn.startingHover(() => {
-		tween(btn.scale, vec2(1.025), 0.15, (p) => btn.scale = p, easings.easeOutQuad)
-	})
 
-	btn.endingHover(() => {
-		tween(btn.scale, vec2(1), 0.15, (p) => btn.scale = p, easings.easeOutQuad)
-		if (btn.isBeingClicked == true) btn.isBeingClicked = false
-		btn.trigger("endHover")
+	btn.onUpdate(() => {
+		// btn.area.scale = btn.area.scale.invRotate()
+		
+		if (btn.isHovering()) {
+			btn.scale = lerp(btn.scale, vec2(1.025), 0.25)
+		}
+		
+		else {
+			btn.scale = lerp(btn.scale, vec2(1), 0.25)
+			if (btn.isBeingClicked == true) btn.isBeingClicked = false
+		}
 	})
 
 	// # Other objects
@@ -444,6 +446,7 @@ export function addStoreElement(winParent:any, opts:storeElementOpt) {
 		anchor("center"),
 		pos(-100, stacksText.pos.y + 15),
 		color(BLACK),
+		rotate(0),
 		z(btn.z + 1),
 		{
 			update() {
