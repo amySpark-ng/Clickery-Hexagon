@@ -7,7 +7,7 @@ import { addTooltip } from "../../additives"
 import { allPowerupsInfo, powerupTypes, spawnPowerup } from "../../powerups"
 import { isHoveringUpgrade, storeElements, storePitchJuice } from "./storeWin"
 import { isAchievementUnlocked, unlockAchievement } from "../../unlockables/achievements"
-import { hovereable, smartArea } from "../../hovers/hoverManaging"
+import { hoverController } from "../../hovers/hoverManaging"
 import { WindowGameObj } from "../windows-api/windowManaging"
 
 export let storeElementsInfo = {
@@ -56,7 +56,7 @@ function isThereSmoke() {
 	return get("smoke", { recursive: true }) ?? true
 }
 
-function regularStoreElement(winParent) {
+function regularStoreElement(winParent:WindowGameObj) {
 	let thisElement = null
 
 	let timer = 0;
@@ -133,7 +133,7 @@ function regularStoreElement(winParent) {
 	}
 }
 
-function lockedPowerupStoreElement(winParent:GameObj) {
+function lockedPowerupStoreElement(winParent:WindowGameObj) {
 	let thisElement = null;
 	let progressSound = null;
 
@@ -253,13 +253,13 @@ export function addStoreElement(winParent:WindowGameObj, opts:storeElementOpt) {
 	const btn = winParent.add([
 		sprite(opts.type),
 		pos(opts.pos),
-		smartArea(),
+		area(),
 		color(),
 		opacity(1),
 		scale(1),
 		anchor("center"),
 		z(winParent.z + 1),
-		hovereable(0),
+		hoverController(),
 		"storeElement",
 		`${opts.type}`,
 		{
@@ -330,8 +330,6 @@ export function addStoreElement(winParent:WindowGameObj, opts:storeElementOpt) {
 		}
 	])
 
-	btn.clickIndex = btn.parent.clickIndex
-
 	// # EVENTS
 	let tooltip = null;
 	if (opts.type == "powerupsElement" && GameState.hasUnlockedPowerups == false) {
@@ -388,8 +386,6 @@ export function addStoreElement(winParent:WindowGameObj, opts:storeElementOpt) {
 	})
 
 	btn.onUpdate(() => {
-		// btn.area.scale = btn.area.scale.invRotate()
-		
 		if (btn.isHovering()) {
 			btn.scale = lerp(btn.scale, vec2(1.025), 0.25)
 		}

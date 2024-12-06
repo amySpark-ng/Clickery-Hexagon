@@ -9,10 +9,10 @@ import { addConfetti } from "./plugins/confetti.js";
 import { cam } from "./gamescene.ts";
 import { checkForUnlockable, isAchievementUnlocked, unlockAchievement } from "./unlockables/achievements.ts";
 import { ROOT } from "../main.ts";
-import { outsideWindowHover } from "./hovers/outsideWindowHover.ts";
 import { mouse } from "./additives.ts";
 import { isWindowUnlocked } from "./unlockables/windowUnlocks.ts";
-import { hovereable } from "./hovers/hoverManaging.ts";
+import { hoverController } from "./hovers/hoverManaging.ts";
+import { AreaCompOpt } from "kaplay";
 
 export let clickVars = {
 	clicksPerSecond: 0, // to properly calculate sps
@@ -55,20 +55,10 @@ function createHexagon() {
 		rotate(0),
 		scale(),
 		opacity(1),
-		hovereable(0),
 		color(saveColorToColor(GameState.settings.hexColor)),
-		area({
-			shape: new Polygon([
-				vec2(406, 118),
-				vec2(613, 116),
-				vec2(711, 292),
-				vec2(615, 463),
-				vec2(411, 466),
-				vec2(315, 293),
-			]),
-			offset: vec2(-512, -293),
-			scale: vec2(1.08), 
-		}),
+		area(),
+		area(),
+		hoverController(1),
 		z(0),
 		layer("hexagon"),
 		"hexagon",
@@ -387,6 +377,35 @@ function createHexagon() {
 		}
 	])
 
+	const hexagonArea: AreaCompOpt = {
+		// must have at least 3 vertices
+		shape: new Polygon([vec2(0), vec2(0), vec2(0)]),
+		offset: vec2(0),
+	}
+
+	// some cool math
+	const pts = []
+	for (let i = 0; i < 6; i++) {
+		const angle = Math.PI / 3 * i;
+		const x = -221 * Math.cos(angle);
+		const y = -221 * Math.sin(angle);
+		pts.push(vec2(x, y));
+	}
+	hexagonArea.shape = new Polygon(pts);
+
+	const panderitoArea: AreaCompOpt = {
+		// must have at least 3 vertices
+		shape: new Polygon([
+			// they have to be clockwise or counter clockwise
+			vec2((-hexagon.width / 2) + 15, 35), // centerleft
+			vec2((-hexagon.width / 2) + 50, -hexagon.height / 4 - 30), // cornerthing
+			vec2(-20, -hexagon.height / 2), // topcenter
+			vec2((hexagon.width / 2) - 20, -hexagon.height / 4), // centerright
+			vec2(20, hexagon.height / 2), // botcenter
+		]),
+		offset: vec2(0),
+	}
+
 	let maxRotationSpeed = 4
 	let rotationSpeed = 0
 	/** How much scale is increased on hover */
@@ -429,16 +448,18 @@ function createHexagon() {
 			hexagon.scale.x = lerp(hexagon.scale.x, 1, 0.25)
 			hexagon.scale.y = lerp(hexagon.scale.y, 1, 0.25)
 		}
-	
-		// panderito
-		if (GameState.settings.panderitoMode && hexagon.sprite != "panderito") {
-			hexagon.sprite = "panderito"
-			hexagon.area.scale = vec2(0.65, 1.1)
-		}
 
-		else {
+		// panderito
+		if (!GameState.settings.panderitoMode) {
 			hexagon.sprite = "hexagon"
-			hexagon.area.scale = vec2(1.08)
+			hexagon.area.shape = hexagonArea.shape
+			hexagon.area.offset = hexagonArea.offset
+		}
+		
+		else {
+			hexagon.sprite = "panderito"
+			hexagon.area.shape = panderitoArea.shape
+			hexagon.area.offset = panderitoArea.offset
 		}
 	})
 

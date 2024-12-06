@@ -210,8 +210,6 @@ export function endAscension() {
 	ascension.ascending = false
 
 	get("*", { recursive: true }).filter(obj => obj.layer == "ascension").forEach((obj) => {
-		if (obj.is("area")) obj.area.scale = vec2(0)
-		
 		if (obj.is("mage") || obj.is("manaText")) {
 			tween(obj.pos.x, obj.pos.x - obj.width, 0.5, (p) => obj.pos.x = p, easings.easeOutQuart).onEnd(() => destroy(obj))
 		}

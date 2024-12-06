@@ -65,6 +65,6 @@ export function drag(onlyX:boolean = false, onlyY:boolean = false) : dragComp {
 		},
 		inspect() {
 			return `dragging: ${this.dragging}`
-		}
+		},
 	}
 }

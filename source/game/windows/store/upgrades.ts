@@ -2,6 +2,7 @@ import { GameState, scoreManager } from "../../../gamestate";
 import { ROOT } from "../../../main";
 import { playSfx, sfxHandlers } from "../../../sound";
 import { addTooltip } from "../../additives";
+import { hoverController } from "../../hovers/hoverManaging";
 import { insideWindowHover } from "../../hovers/insideWindowHover";
 import { positionSetter } from "../../plugins/positionSetter";
 import { blendColors, bop, formatNumber, getPositionOfSide, getRandomDirection, insertAtStart, parseAnimation } from "../../utils";
@@ -62,6 +63,7 @@ export function addUpgrades(elementParent:ReturnType<typeof addStoreElement>) {
 			z(winParent.z + 1),
 			area({ scale: vec2(1.15, 1.15) }),
 			outline(5, BLACK),
+			hoverController(),
 			"upgrade",
 			{
 				type: elementParent.is("clickersElement") ? "k_" : "c_",
@@ -242,8 +244,6 @@ export function addUpgrades(elementParent:ReturnType<typeof addStoreElement>) {
 		upgradeObj.onHover(() => {
 			// tooltips
 			let textInBlink = upgradeObj.value != null ? `+${upgradeObj.value}` : `Clicks every ${upgradeObj.freq} ${upgradeObj.freq > 1 ? "seconds" : "second"}`;
-			debug.log("hovered")
-
 			if (!isUpgradeBought(upgradeObj.upgradeId)) {
 				if (upgradeObj.tooltip == null) {
 					upgradeTooltip = addPriceTooltip()

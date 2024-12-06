@@ -6,7 +6,7 @@ import { arrToColor, bop, formatNumber, formatTime, getPosInGrid, getPositionOfS
 import { positionSetter } from "./plugins/positionSetter";
 import { checkForUnlockable } from "./unlockables/achievements";
 import { addTooltip } from "./additives";
-import { hovereable } from "./hovers/hoverManaging";
+import { hoverController } from "./hovers/hoverManaging";
 
 class Powerup {
 	sprite: string;
@@ -74,31 +74,31 @@ export const powerupTypes = {
 }
 
 const blabPhrases = [
-	// "Test powerup",
-	// "Despite a text saying test powerup\nThis was the last powerup implemented",
-	// "lol!",
-	// "Hexagoning since march 2024",
-	// "Also try Cookie Clicker!",
-	// "Orteil don't sue me",
+	"Test powerup",
+	"Despite a text saying test powerup\nThis was the last powerup implemented",
+	"lol!",
+	"Hexagoning since march 2024",
+	"Also try Cookie Clicker!",
+	"Orteil don't sue me",
 	"Area of an hexagon:\nA = (3√3*s²)/2",
-	// "Yummers",
-	// "Enjoying the game so far?",
-	// "These sometimes explain things things i was lazy enough to code an explanation for",
-	// "Boy why you so buggy",
-	// "Zizou approved :holding_back_tears:",
-	// "Hey medals don't work!",
-	// "The clicker game you were (not) waiting for",
-	// "Not balanced at all",
-	// "Did you know?\nKAPLAY is free, open-source and fun!",
-	// "Did you know?\nYou can hold to drag the buttons in your taskbar around!",
-	// "Did you know?\nYou can hold and drag the buttons in the extra window\nto your taskbar!",
-	// "Did you know?\nYou can hold your mouse when buying!",
-	// "Did you know?\nYou can hold shift to bulk-buy 10x things!",
-	// "Did you know?\nYou can click the big hexagon several times\nto start a combo!",
-	// "Did you know?\nThe game has support for displaying numbers up until Vigintillions!",
-	// "Did you know?\nYou can press Shift + R to restart the game's scene",
-	// "Did you know?\nYou can press Shift + C to save your game",
-	// "Did you know?\nYou can press F2 to remove all toasts/logs",
+	"Yummers",
+	"Enjoying the game so far?",
+	"These sometimes explain things things i was lazy enough to code an explanation for",
+	"Boy why you so buggy",
+	"Zizou approved :holding_back_tears:",
+	"Hey medals don't work!",
+	"The clicker game you were (not) waiting for",
+	"Not balanced at all",
+	"Did you know?\nKAPLAY is free, open-source and fun!",
+	"Did you know?\nYou can hold to drag the buttons in your taskbar around!",
+	"Did you know?\nYou can hold and drag the buttons in the extra window\nto your taskbar!",
+	"Did you know?\nYou can hold your mouse when buying!",
+	"Did you know?\nYou can hold shift to bulk-buy 10x things!",
+	"Did you know?\nYou can click the big hexagon several times\nto start a combo!",
+	"Did you know?\nThe game has support for displaying numbers up until Vigintillions!",
+	"Did you know?\nYou can press Shift + R to restart the game's scene",
+	"Did you know?\nYou can press Shift + C to save your game",
+	"Did you know?\nYou can press F2 to remove all toasts/logs",
 ]
 
 export type powerupName = keyof typeof powerupTypes | "random";
@@ -342,7 +342,7 @@ export function spawnPowerup(opts?:powerupOpt) {
 		waver({ wave_speed: 1.25, maxAmplitude: 5, minAmplitude: 0 }),
 		area(),
 		timer(),
-		hovereable(100),
+		hoverController(100),
 		"powerup",
 		{
 			type: opts.type,

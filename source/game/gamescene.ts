@@ -364,7 +364,7 @@ export const gamescene = () => scene("gamescene", () => {
 			get("toast").forEach(toast => toast.close())
 		}
 
-		if (isKeyPressed("f")) {
+		if (isKeyPressed("f") && !DEBUG) {
 			toggleTheFullscreen()
 		}
 

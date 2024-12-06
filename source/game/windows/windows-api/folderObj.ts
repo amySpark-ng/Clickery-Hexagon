@@ -8,7 +8,7 @@ import { addMinibutton, getMinibuttonPos, miniButtonXarea, miniButtonYarea, move
 import { manageWindow, allObjWindows, windowKey } from "./windowManaging";
 import { GameObj } from "kaplay";
 import { allPowerupsInfo } from "../../powerups";
-import { hovereable } from "../../hovers/hoverManaging";
+import { hoverController } from "../../hovers/hoverManaging";
 
 export let folderObj:GameObj;
 export let folded = true;
@@ -40,7 +40,7 @@ export function addFolderObj() {
 		z(0),
 		scale(),
 		anchor("center"),
-		hovereable(2),
+		hoverController(3),
 		"folderObj",
 		{
 			defaultScale: vec2(1.2),
@@ -75,7 +75,6 @@ export function addFolderObj() {
 				// return them to folderObj pos
 				movingMinibuttons = true
 				get("minibutton").forEach(minibutton => {
-					minibutton.area.scale = vec2(0)
 					tween(minibutton.opacity, 0, 0.32, (p) => minibutton.opacity = p, easings.easeOutQuint)
 					tween(minibutton.pos, theFolderObj.pos, 0.32, (p) => minibutton.pos = p, easings.easeOutQuint).then(() => {
 						destroy(minibutton)
@@ -118,9 +117,6 @@ export function addFolderObj() {
 			},
 
 			update() {
-				if (this.interactable == false) this.area.scale = vec2(0)
-				else this.area.scale = vec2(1.2) 
-
 				this.flipX = folded ? true : false
 				
 				if (curDraggin?.is("gridMiniButton") || curDraggin?.is("minibutton")) return

@@ -21,7 +21,7 @@ import { medalsWinContent } from "../medalsWin.ts";
 import { hexColorWinContent } from "../color/hexColorWin.ts";
 import { bgColorWinContent } from "../color/bgColorWin.ts";
 import { leaderboardsWinContent } from "../leaderboardsWin.ts";
-import { hovereable } from "../../hovers/hoverManaging.ts";
+import { hoverController } from "../../hovers/hoverManaging.ts";
 
 export let infoForWindows = {}
 
@@ -81,16 +81,17 @@ export function isWindowOpen(windowKey:windowKey) {
 /**
  * Creates a new property in the windowObj that holds this 
  */
-export function addXButton(windowParent:any) {
+export function addXButton(windowParent:WindowGameObj) {
 	let xButton = windowParent.add([
 		sprite("xButton"),
 		color(WHITE),
 		pos(),
 		anchor("center"),
-		insideWindowHover(windowParent),
+		hoverController(),
 		z(windowParent.z + 1),
 		area({ scale: vec2(1.8, 1.1)}),
 		"xButton",
+		"ignorepoint",
 		{
 			add() {
 				// can't use getPositionOfSide because it will be root and not relative to windowParent
@@ -102,11 +103,11 @@ export function addXButton(windowParent:any) {
 		}
 	])
 
-	xButton.startingHover(() => {
+	xButton.onHover(() => {
 		xButton.color = RED
 	})
 
-	xButton.endingHover(() => {
+	xButton.onHoverEnd(() => {
 		xButton.color = WHITE
 	})
 
@@ -141,7 +142,7 @@ export function openWindow(windowKey:windowKey) {
 		area({ scale: vec2(1, 1) }),
 		timer(),
 		color(),
-		hovereable(10),
+		hoverController(10),
 		"window",
 		"ignorepoint",
 		`${windowKey}`,
@@ -287,8 +288,6 @@ export function openWindow(windowKey:windowKey) {
 	})
 
 	windowObj.onUpdate(() => {
-		const clickIndexAdd = windowObj.focused ? 0 : get("window").findIndex(obj => obj == windowObj)
-		windowObj.clickIndex = 10 + clickIndexAdd
 	})
 
 	windowObj.onMouseRelease(() => {
@@ -350,7 +349,7 @@ export function openWindow(windowKey:windowKey) {
 	return windowObj;
 }
 
-export type WindowGameObj = ReturnType<typeof openWindow>
+export type WindowGameObj = ReturnType<typeof openWindow>;
 
 export function emptyWinContent(winParent:WindowGameObj) {
 	winParent.add([

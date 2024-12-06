@@ -357,6 +357,19 @@ export function setVariable(obj, path, value) {
 	target[parts[parts.length-1]] = value
 }
 
+// i did use it again!!
+/** Swaps properties on 2 objects
+ * @param sourceObj The source object
+ * @param sourceKey The source key
+ * @param targetObj The target object
+ * @param targetKey The target key
+ */
+export function swap(sourceObj:any, sourceKey:string, targetObj:any, targetKey:string) {
+	let temp = sourceObj[sourceKey];
+	sourceObj[sourceKey] = targetObj[targetKey];
+	targetObj[targetKey] = temp;
+}
+
 export function saveAnim() {
 	addToast({
 		icon: "saveIcon",

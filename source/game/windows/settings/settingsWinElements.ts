@@ -5,9 +5,9 @@ import { manageMute, playSfx, volChangeTune } from "../../../sound"
 import { GameState, scoreManager } from "../../../gamestate"
 import { addTooltip, mouse, tooltipInfo } from "../../additives"
 import { spsText } from "../../uicounters"
-import { positionSetter } from "../../plugins/positionSetter"
-import { insideWindowHover } from "../../hovers/insideWindowHover"
 import { addPlusScoreText } from "../../combo-utils"
+import { WindowGameObj } from "../windows-api/windowManaging"
+import { hoverController } from "../../hovers/hoverManaging"
 
 const defaultTextSize = 36
 
@@ -35,9 +35,7 @@ type checkBoxOpt = {
 	 */
 	titleSize?: number
 }
-export function addCheckbox(opts:checkBoxOpt, parent?:any) {
-	const winParent = parent.parent;
-	
+export function addCheckbox(opts:checkBoxOpt, parent?:GameObj) {
 	let checkBox = (parent || ROOT).add([
 		sprite("checkbox", {
 			anim: "off"
@@ -46,7 +44,7 @@ export function addCheckbox(opts:checkBoxOpt, parent?:any) {
 		anchor("center"),
 		area(),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 		opts.name,
 		{
 			tick: null,
@@ -81,7 +79,7 @@ export function addCheckbox(opts:checkBoxOpt, parent?:any) {
 		checkBox.turnOff()
 	}
 
-	checkBox.onPressClick(() => {
+	checkBox.onClick(() => {
 		bop(checkBox)
 
 		// gets the result of the click
@@ -123,7 +121,7 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 	let barsContainer = parent.add([anchor("center"), pos(-128, -30)])
 	let checkboxesContainer = parent.add([anchor("center"), pos(0, -70)])
 
-	const winParent = parent.parent
+	const winParent = parent.parent as WindowGameObj
 
 	for (let i = 0; i < 10; i++) {
 		let volbar = barsContainer.add([
@@ -133,7 +131,7 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 			scale(),
 			area(),
 			opacity(1),
-			insideWindowHover(winParent),
+			hoverController(),
 			"volbar",
 			{
 				volume: 0.1 * (i + 1),
@@ -148,7 +146,7 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 		volbar.pos.x = volbar.pos.x + (i * 28)
 
 		// progresionally turn the bars to the right off so it has a cool animation
-		volbar.onPressClick(() => {
+		volbar.onClick(() => {
 			tween(GameState.settings.volume, volbar.volume, 0.1, (p) => {
 				const lastVolume = GameState.settings.volume
 				GameState.settings.volume = parseFloat(p.toFixed(1))
@@ -167,12 +165,12 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 		area(),
 		scale(),
 		anchor("center"),
-		insideWindowHover(winParent),
+		hoverController(),
 	]);
 
 	minus.pos.x = volbars[0].pos.x - 26
 
-	minus.onPressClick(() => {
+	minus.onClick(() => {
 		if (GameState.settings.volume > 0) {
 			GameState.settings.volume -= 0.1
 		}
@@ -188,12 +186,12 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 		area(),
 		scale(),
 		anchor("center"),
-		insideWindowHover(winParent),
+		hoverController(),
 	]);
 
 	plus.pos.x = volbars[volbars.length - 1].pos.x + 26
 
-	plus.onPressClick(() => {
+	plus.onClick(() => {
 		if (GameState.settings.volume <= 0.9) {
 			GameState.settings.volume += 0.1
 		}
@@ -235,7 +233,7 @@ export function addVolumeControl(position:Vec2, parent:GameObj) {
 export function addScorePerTimeCounter(position:Vec2, parent:GameObj) {
 	parent = parent || ROOT
 	
-	const winParent = parent.parent
+	const winParent = parent.parent as WindowGameObj
 
 	let values = ["", "Seconds", "Minutes", "Hours"]
 
@@ -261,7 +259,7 @@ export function addScorePerTimeCounter(position:Vec2, parent:GameObj) {
 		pos(0, 80),
 		anchor("center"),
 		area({ scale: 1.5 }),
-		insideWindowHover(winParent),
+		hoverController(),
 		{
 			update() {
 				this.pos.x = lerp(this.pos.x, counter.pos.x - (counter.width / 2) - 20, 0.5)
@@ -271,7 +269,7 @@ export function addScorePerTimeCounter(position:Vec2, parent:GameObj) {
 	])
 	leftArrow.flipX = true
 
-	leftArrow.onPressClick(() => {
+	leftArrow.onClick(() => {
 		if (GameState.settings.spsTextMode - 1 < 1) GameState.settings.spsTextMode = 3
 		else GameState.settings.spsTextMode -= 1
 		spsText.updateValue()
@@ -283,7 +281,7 @@ export function addScorePerTimeCounter(position:Vec2, parent:GameObj) {
 		pos(0, 80),
 		anchor("center"),
 		area({ scale: 1.5 }),
-		insideWindowHover(winParent),
+		hoverController(),
 		{
 			update() {
 				this.pos.x = lerp(this.pos.x, counter.pos.x + (counter.width / 2) + 20, 0.5)
@@ -292,7 +290,7 @@ export function addScorePerTimeCounter(position:Vec2, parent:GameObj) {
 		}
 	])
 
-	rightArrow.onPressClick(() => {
+	rightArrow.onClick(() => {
 		if (GameState.settings.spsTextMode + 1 > 3) GameState.settings.spsTextMode = 1
 		else GameState.settings.spsTextMode += 1
 		spsText.updateValue()
@@ -313,13 +311,13 @@ export function addSaveButton(otherButtonsBg:GameObj) {
 		anchor("center"),
 		area(),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 		{
 			count: 3
 		}
 	])
 
-	saveButton.onPressClick(() => {
+	saveButton.onClick(() => {
 		bop(saveButton)
 		if (get("toast").filter(toast => toast.type == "gamesaved").length < 1) {
 			playSfx("clickButton", { detune: rand(0, 25) })
@@ -348,7 +346,7 @@ export function addDeleteSaveButton(otherButtonsBg:GameObj) {
 		pos(20, 36),
 		anchor("center"),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 		{
 			count: 3
 		}
@@ -367,21 +365,21 @@ export function addDeleteSaveButton(otherButtonsBg:GameObj) {
 	])
 	
 	let deleteSaveButtonTooltip:tooltipInfo = null;
-	deleteSaveButton.startingHover(() => {
+	deleteSaveButton.onHover(() => {
 		deleteSaveButtonTooltip = addTooltip(deleteSaveButton, {
 			direction: "up",
 			text: "WILL DELETE YOUR SAVE"
 		})
 	})
 
-	deleteSaveButton.endingHover(() => {
+	deleteSaveButton.onHoverEnd(() => {
 		deleteSaveButton.count = 3
 		deleteSaveButtonTooltip.end()
 	})
 
 	let initialTrashPosition = deleteSaveButton.pos
 
-	deleteSaveButton.onPressClick(() => {
+	deleteSaveButton.onClick(() => {
 		if (!winParent.active) return
 	
 		deleteSaveButton.count--
@@ -409,15 +407,13 @@ export function addDeleteSaveButton(otherButtonsBg:GameObj) {
 }
 
 export function addMinigame(otherButtonsBg:GameObj) {
-	const winParent = otherButtonsBg.parent;
-	
 	let miniHex = otherButtonsBg.add([
 		sprite("settingsDottedHex"),
 		pos(190, 34),
 		area(),
 		anchor("center"),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 	])
 
 	let miniGameActive = scoreManager.autoScorePerSecond() >= 10
@@ -425,7 +421,7 @@ export function addMinigame(otherButtonsBg:GameObj) {
 	if (miniGameActive) {
 		miniHex.sprite = "settingsHex"
 
-		miniHex.onPressClick(() => {
+		miniHex.onClick(() => {
 			scoreManager.addScore(1)
 			bop(miniHex, 0.05)
 			let thing = addPlusScoreText({

@@ -4,6 +4,8 @@ import { hexagon } from "./hexagon"
 import { blendColors, saveColorToColor } from "./utils"
 import { allObjWindows, manageWindow } from "./windows/windows-api/windowManaging"
 import { isWindowUnlocked } from "./unlockables/windowUnlocks"
+import { dragComp } from "./plugins/drag"
+import { AreaComp } from "kaplay"
 
 export let gameBg:GameObj;
 export function addBackground() {
@@ -63,9 +65,9 @@ export function addMouse() {
 			speed: 5000, // 5000 is the optimal for actual mouse movement
 			grabbing: false,
 			update() {
-				const allHoverObjs = get("hovereable", { recursive: true })
+				const allHoverObjs = get("hover", { recursive: true })
 
-				allHoverObjs.forEach((hoverObj) => {
+				allHoverObjs.forEach((hoverObj:GameObj<dragComp | AreaComp>) => {
 					if (!hoverObj.isHovering()) {
 						if (hoverObj.dragging) this.play("grab")
 						else {
@@ -74,8 +76,13 @@ export function addMouse() {
 						}
 					}
 
+					// this runs when the obj is being hovered
 					else {
-						if (hoverObj.dragging || isMouseDown("left")) this.play("grab")
+						if (isMouseDown("left")) {
+							if (hoverObj.is("ignorepoint") && !hoverObj.dragging) return;
+							this.play("grab")
+						}
+
 						else {
 							if (!hoverObj.is("ignorepoint")) this.play("point")
 							else this.play("cursor")

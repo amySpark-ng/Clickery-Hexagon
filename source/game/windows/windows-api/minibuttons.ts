@@ -1,7 +1,7 @@
 import { curDraggin, drag, setCurDraggin } from "../.././plugins/drag";
 import { dummyShadow } from "../.././plugins/dummyShadow";
 import { playSfx } from "../../../sound";
-import { bop, getPosInGrid } from "../../utils";
+import { bop, getPosInGrid, swap } from "../../utils";
 import { mouse } from "../../additives";
 import { infoForWindows, manageWindow, buttonSpacing, openWindow, allObjWindows, windowKey, } from "./windowManaging";
 import { GameState } from "../../../gamestate";
@@ -9,7 +9,7 @@ import { GameObj, PosComp, SpriteComp, SpriteData, Vec2 } from "kaplay";
 import { openWindowButton } from "./openWindowButton";
 import { folded, folderObj } from "./folderObj";
 import { destroyExclamation } from "../../unlockables/windowUnlocks";
-import { hovereable } from "../../hovers/hoverManaging";
+import { hoverController } from "../../hovers/hoverManaging";
 
 type minibuttonOpt = {
 	windowKey:windowKey
@@ -52,7 +52,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 		sprite(theSprite),
 		pos(opts.initialPosition),
 		anchor("center"),
-		area({ scale: vec2(0) }),
+		area(),
 		scale(1),
 		opacity(1),
 		rotate(0),
@@ -62,7 +62,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 		z(folderObj.z - 1),
 		dummyShadow(),
 		openWindowButton(),
-		hovereable(1),
+		hoverController(2),
 		`${opts.windowKey}`,
 		"minibutton",
 		infoForWindows[opts.windowKey].icon == "extra" ? "extraMinibutton" : "",
@@ -263,28 +263,25 @@ export function addMinibutton(opts:minibuttonOpt) {
 	else currentMinibutton.play("default")
 
 	// animate them
+	currentMinibutton.area.scale = vec2(1)
 	currentMinibutton.opacity = 0
-	currentMinibutton.area.scale = vec2(0)
     tween(currentMinibutton.opacity, 1, 0.32, (p) => currentMinibutton.opacity = p, easings.easeOutQuad)
-    tween(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.32, (p) => currentMinibutton.pos = p, easings.easeOutBack).then(() => {
-		currentMinibutton.area.scale.x = 1
-		currentMinibutton.area.scale.y = 1
+	
+	currentMinibutton.onHover(() => {
+		
 	})
 
+	currentMinibutton.onUpdate(() => {
+		if (currentMinibutton.dragging) return;
+		currentMinibutton.pos = lerp(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.5)
+	})
+	
 	// currentMinibutton is the one being swapped to met the curDragging wish
 	currentMinibutton.on("dragHasSurpassed", (left) => {
 		currentMinibutton.dragHasSurpassed = true
 
 		// the bigger the index the more to the ACTUAL left it will be
 		// -- to the right / ++ to the left
-
-		// will i use this function again?
-		function swap(sourceObj:any, sourceKey:string, targetObj:any, targetKey:string) {
-			let temp = sourceObj[sourceKey];
-			sourceObj[sourceKey] = targetObj[targetKey];
-			targetObj[targetKey] = temp;
-		}
-		// probably not
 		
 		// change it before they're swapped
 		GameState.taskbar[curDraggin.taskbarIndex] = currentMinibutton.windowKey
@@ -294,7 +291,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 
 		// sets position based on the new taskbarindex
 		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
-		tween(currentMinibutton.pos.x, newXPos, 0.32, (p) => currentMinibutton.pos.x = p, easings.easeOutBack)
+		currentMinibutton.destinedPosition.x = newXPos
 	})
 
 	currentMinibutton.use(shader("saturate", () => ({
