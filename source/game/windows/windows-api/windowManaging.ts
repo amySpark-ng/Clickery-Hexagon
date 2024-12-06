@@ -1,13 +1,9 @@
-import { GameState } from "../../../gamestate.ts";
-import { bop, getPositionOfSide } from "../../utils.ts";
+import { bop, getPositionOfSide, swap } from "../../utils.ts";
 import { mouse } from "../../additives.ts";
 import { drag, curDraggin, setCurDraggin } from "../.././plugins/drag.ts";
 import { playSfx } from "../../../sound.ts";
 import { ROOT } from "../../../main.ts";
 import { folderObj } from "./folderObj.ts";
-import { GameObj, Vec2 } from "kaplay";
-import { insideWindowHover } from "../../hovers/insideWindowHover.ts";
-import { isAchievementUnlocked, unlockAchievement } from "../../unlockables/achievements.ts";
 
 // window contents
 import { storeWinContent } from "../store/storeWin.ts";
@@ -180,18 +176,16 @@ export function openWindow(windowKey:windowKey) {
 			activate() {
 				this.active = true
 				this.trigger("activate")
-				
+
+				const highestWindow = get("window").sort((a, b) => b.z - a.z)[0]
+				swap(this, "z", highestWindow, "z")
+
 				if (this.is("shader")) {
 					this.unuse("shader")
 					this.get("*", { recursive: true }).forEach((obj) => {
 						obj.unuse("shader")
 					})
 				}
-
-				// trigger some hovers
-				this.get("*").filter(obj => obj.is("insideHover") && obj.isHovering() == true && obj.isBeingHovered == false).forEach(obj => {
-					obj.startHoverFunction()
-				})
 			},
 
 			deactivate() {
@@ -204,13 +198,6 @@ export function openWindow(windowKey:windowKey) {
 						obj.use(shader("grayscale"))
 					})
 				}
-
-				// untrigger some hovers
-				let objsWithHover = this.get("*").filter(obj => obj.is("insideHover") && obj.isBeingHovered == true)
-
-				objsWithHover.forEach(obj => {
-					obj.endHoverFunction()
-				})
 			},
 
 			isMouseInClickingRange() {
@@ -223,39 +210,24 @@ export function openWindow(windowKey:windowKey) {
 			isMouseInRange() {
 				return this.hasPoint(mouse.pos);
 			},
-
-			update() {
-				this.pos.x = clamp(this.pos.x, -151, 1180)
-				this.pos.y = clamp(this.pos.y, this.height / 2, height() + (this.height / 2) - 36)
-			},
 		}
 	])
+
+	// sets highestnest and priority
+	const highestWindow = get("window").sort((a, b) => b.z - a.z)[0] ?? { z: 0 }
+	windowObj.z = highestWindow.z + 1
+	windowObj.clickIndex = 10 + windowObj.z
 
 	infoForWindows[windowKey].lastPos.x = clamp(infoForWindows[windowKey].lastPos.x, 196, 827)
 	infoForWindows[windowKey].lastPos.y = clamp(infoForWindows[windowKey].lastPos.y, height() - windowObj.height / 2, -windowObj.height / 2)
 	windowObj.pos = infoForWindows[windowKey].lastPos
 
-	windowObj.onHover(() => {
-		get("outsideHover", { recursive: true }).forEach((obj) => {
-			obj.trigger("cursorEnterWindow", windowObj)
-		})
-
-		get("insideHover", { recursive: true }).forEach((obj) => {
-			obj.trigger("cursorEnterWindow", windowObj)
-		})
-	})
-	
-	windowObj.onHoverEnd(() => {
-		get("outsideHover", { recursive: true }).forEach((obj) => {
-			obj.trigger("cursorExitWindow", windowObj)
-		})
-
-		get("insideHover", { recursive: true }).forEach((obj) => {
-			obj.trigger("cursorExitWindow", windowObj)
-		})
-	})
-
 	windowObj.xButton = addXButton(windowObj)
+
+	windowObj.onUpdate(() => {
+		windowObj.pos.x = clamp(windowObj.pos.x, -151, 1180)
+		windowObj.pos.y = clamp(windowObj.pos.y, windowObj.height / 2, height() + (windowObj.height / 2) - 36)
+	})
 
 	windowObj.onClick(() => {
 		// if has been closed don't do anything
@@ -285,9 +257,6 @@ export function openWindow(windowKey:windowKey) {
 				}
 			}
 		}
-	})
-
-	windowObj.onUpdate(() => {
 	})
 
 	windowObj.onMouseRelease(() => {

@@ -72,7 +72,6 @@ function regularStoreElement(winParent:WindowGameObj) {
 			thisElement = this
 
 			thisElement.onMousePress("left", () => {
-				if (allPowerupsInfo.isHoveringAPowerup == true) return
 				if (thisElement.isBeingHovered == false) return
 				if (!winParent.active) return
 				
@@ -111,7 +110,6 @@ function regularStoreElement(winParent:WindowGameObj) {
 			})
 		
 			thisElement.onMouseRelease(() => {
-				if (allPowerupsInfo.isHoveringAPowerup == true) return
 				if (!winParent.active) return
 				
 				downEvent?.cancel()
@@ -173,7 +171,6 @@ function lockedPowerupStoreElement(winParent:WindowGameObj) {
 	
 			let downEvent = null;
 			thisElement.onMousePress("left", () => {
-				if (allPowerupsInfo.isHoveringAPowerup == true) return
 				if (thisElement.isBeingHovered == false) return
 				if (!winParent.active) return
 			
@@ -205,7 +202,6 @@ function lockedPowerupStoreElement(winParent:WindowGameObj) {
 			})
 	
 			thisElement.onMouseRelease("left", () => {
-				if (allPowerupsInfo.isHoveringAPowerup == true) return
 				if (!winParent.active) return
 			
 				if (!thisElement.isHovering()) return;

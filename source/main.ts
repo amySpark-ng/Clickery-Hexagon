@@ -96,7 +96,7 @@ onLoad(() => {
 	}
 	
 	ROOT.on("rungame", async () => {
-		GameState.load()
+		GameState.loadFromStorage()
 		volume(GameState.settings.volume)
 		addMouse()
 

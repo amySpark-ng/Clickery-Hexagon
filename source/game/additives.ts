@@ -4,7 +4,7 @@ import { hexagon } from "./hexagon"
 import { blendColors, saveColorToColor } from "./utils"
 import { allObjWindows, manageWindow } from "./windows/windows-api/windowManaging"
 import { isWindowUnlocked } from "./unlockables/windowUnlocks"
-import { dragComp } from "./plugins/drag"
+import { DragComp } from "./plugins/drag"
 import { AreaComp } from "kaplay"
 
 export let gameBg:GameObj;
@@ -67,7 +67,7 @@ export function addMouse() {
 			update() {
 				const allHoverObjs = get("hover", { recursive: true })
 
-				allHoverObjs.forEach((hoverObj:GameObj<dragComp | AreaComp>) => {
+				allHoverObjs.forEach((hoverObj:GameObj<DragComp | AreaComp>) => {
 					if (!hoverObj.isHovering()) {
 						if (hoverObj.dragging) this.play("grab")
 						else {

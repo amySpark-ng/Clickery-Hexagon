@@ -1,18 +1,18 @@
 import { GameState } from "../../gamestate";
 import { ROOT } from "../../main";
-import { curDraggin, drag, setCurDraggin } from "../plugins/drag";
+import { curDraggin, drag, DragComp, setCurDraggin } from "../plugins/drag";
 import { dummyShadow } from "../plugins/dummyShadow";
 import { playSfx } from "../../sound";
 import { bop, getPosInGrid } from "../utils";
 import { mouse } from "../additives";
-import { buttonSpacing, infoForWindows, manageWindow, openWindow, windowKey } from "./windows-api/windowManaging";
+import { buttonSpacing, infoForWindows, manageWindow, openWindow, WindowGameObj, windowKey } from "./windows-api/windowManaging";
 import { addMinibutton } from "./windows-api/minibuttons";
 import { openWindowButton } from "./windows-api/openWindowButton";
 import { destroyExclamation } from "../unlockables/windowUnlocks";
-import { insideWindowHover } from "../hovers/insideWindowHover";
-import { GameObj } from "kaplay";
+import { GameObj, PosComp } from "kaplay";
+import { hoverController } from "../hovers/hoverManaging";
 
-export let gridContainer:GameObj;
+export let gridContainer:GameObj<PosComp>;
 let currentClosest:GameObj;
 
 // Function to update the closest minibutton
@@ -65,11 +65,10 @@ function updateClosestMinibuttonToDrag() {
  * @returns the grid minibutton
  */
 export function addGridButton(windowKey:windowKey) {
-	let selection:any;
 	let distanceToSlot:number
 	let distanceToClosestMinibutton:number;
-	let minibuttons:any[];
-	let closestMinibutton = null;
+	let minibuttons:ReturnType<typeof addMinibutton>[] = [];
+	let closestMinibutton:ReturnType<typeof addMinibutton> = null;
 	let closestDistance = Infinity;
 
 	let winParent:GameObj = gridContainer.parent;
@@ -94,7 +93,7 @@ export function addGridButton(windowKey:windowKey) {
 		area(),
 		rotate(0),
 		dummyShadow(),
-		insideWindowHover(winParent),
+		hoverController(),
 		openWindowButton(),
 		"gridMiniButton",
 		{
@@ -192,24 +191,17 @@ export function addGridButton(windowKey:windowKey) {
 		}
 	})
 
-	gridButton.startingHover(() => {
+	gridButton.onHover(() => {
+		if (gridButton.dragging) return;
 		let idx = windowInfo.idx
 		playSfx("hoverMiniButton", {detune: 100 * idx / 4})
 		gridButton.play("hover")
-		
-		selection = gridSlot.add([
-			pos(),
-			rect(gridButton.width, gridButton.height, { radius: 5 }),
-			opacity(0.15),
-			anchor("center"),
-			"gridMinibuttonSelection",
-		])
 	})
 
-	gridButton.endingHover(() => {
+	gridButton.onHoverEnd(() => {
+		if (gridButton.dragging) return;
 		gridButton.play("default")
 		tween(gridButton.angle, 0, 0.32, (p) => gridButton.angle = p, easings.easeOutQuint)
-		selection?.destroy()
 	})
 
 	// press, hold and release hold functions
@@ -224,10 +216,6 @@ export function addGridButton(windowKey:windowKey) {
 	})
 
 	gridButton.onHold(() => {
-		get("gridMinibuttonSelection", { recursive: true }).forEach(selection => {
-			selection?.destroy()
-		})
-		
 		// get out of the parent and sends him to the real world (root)
 		gridButton.parent.children.splice(gridButton.parent.children.indexOf(gridButton), 1)
 		gridButton.parent = ROOT
@@ -252,7 +240,7 @@ export function addGridButton(windowKey:windowKey) {
 
 let amountOfElementsX = 5
 let amountOfElementsY = 2
-export function extraWinContent(winParent) {
+export function extraWinContent(winParent:WindowGameObj) {
 	// makes the grid
 	gridContainer = winParent.add([pos(-164, -32)])
 
@@ -318,6 +306,24 @@ export function extraWinContent(winParent) {
 		extraMinibutton.shut = false
 		extraMinibutton.play(`open_${extraMinibutton.isHovering() ? "hover" : "default"}`)
 	}
+
+	// the cursor thing
+	let cursorPos = vec2(0)
+	gridContainer.onDraw(() => {
+		const hoveredGridButton = get("gridMiniButton", { recursive: true }).filter((obj) => obj.isHovering())[0] as GameObj<PosComp | DragComp>
+		if (!hoveredGridButton || hoveredGridButton.dragging) return;
+		cursorPos = lerp(cursorPos, hoveredGridButton.pos, 0.7)
+
+		drawRect({
+			pos: cursorPos,
+			width: extraMinibutton.width,
+			height: extraMinibutton.height,
+			color: WHITE,
+			anchor: "center",
+			opacity: 0.25,
+			radius: 8,
+		})
+	})
 
 	winParent.on("close", () => {
 		let extraMinibutton = get("extraMinibutton")[0]

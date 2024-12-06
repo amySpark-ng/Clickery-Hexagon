@@ -1,5 +1,5 @@
 import { AreaComp, Comp, GameObj, Vec2 } from "kaplay";
-import { dragComp } from "../plugins/drag";
+import { DragComp } from "../plugins/drag";
 
 export interface HoverControllerComp extends Comp {
 	/** Determines wheter the object has higher priority for hover */
@@ -35,7 +35,7 @@ export function hoverController(clickIndex: number = 0) : HoverControllerComp {
 	}
 }
 
-type typicalHoverObj = GameObj<AreaComp | HoverControllerComp | dragComp>
+type typicalHoverObj = GameObj<AreaComp | HoverControllerComp | DragComp>
 
 /** Function that manages the hovering and area of all hover-eable objects */
 export function hoverManaging() {

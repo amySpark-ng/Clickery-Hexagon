@@ -9,7 +9,7 @@ export function setCurDraggin(value = null) {
 	curDraggin = value
 }
 
-export interface dragComp extends Comp {
+export interface DragComp extends Comp {
 	dragging: boolean
 	pick(): void
 	onDrag(action: () => void): KEventController
@@ -22,7 +22,7 @@ export interface dragComp extends Comp {
  * @param onlyX - only drag it on the X axis
  * @param onlyY - only drag it on the Y axis
  */
-export function drag(onlyX:boolean = false, onlyY:boolean = false) : dragComp {
+export function drag(onlyX:boolean = false, onlyY:boolean = false) : DragComp {
 
 	// The displacement between object pos and mouse pos
 	let offset = vec2(0)

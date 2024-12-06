@@ -267,10 +267,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 	currentMinibutton.opacity = 0
     tween(currentMinibutton.opacity, 1, 0.32, (p) => currentMinibutton.opacity = p, easings.easeOutQuad)
 	
-	currentMinibutton.onHover(() => {
-		
-	})
-
 	currentMinibutton.onUpdate(() => {
 		if (currentMinibutton.dragging) return;
 		currentMinibutton.pos = lerp(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.5)

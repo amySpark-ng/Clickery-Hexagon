@@ -4,10 +4,11 @@
 
 THE B-UGS
 <!-- for the life of me i couldn't fix this im sorry -->
-- Fix clickIndex for windows that are lower than others
 - Refactor window activating and reactivating
-- Add cloudsaves
 - Figure out a way to make it so scale doesn't affect area for certain objects (minibuttons, upgrades on store windows)
+- Refactor minibutton working i guess
+- Add clickIndex for powerups
+- Leaving a grid button in taskbar causes it to open for some strange reason
 
 FEATURES
 - Critical

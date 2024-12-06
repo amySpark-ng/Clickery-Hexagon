@@ -8,7 +8,9 @@ import { Session } from "newgrounds.js/dist/first";
 import { AchievementInterface, achievements, getAchievement, isAchievementUnlocked, unlockAchievement } from "./game/unlockables/achievements";
 import { Medal } from "newgrounds.js/dist/first";
 
+/** Wheter ng should work or not */
 export let ngEnabled:boolean;
+/** If this is not null, the user is logged in */
 export let ngUser:User;
 
 export function connectToNewgrounds() {
@@ -30,7 +32,7 @@ export function postEverything() {
 }
 
 /**
- * Enables NG
+ * Runs when the user is logged in, enables NG and sets the ngUser object
  */
 export async function onLogIn(session: Session) {
 	ngUser = session.user
@@ -38,6 +40,13 @@ export async function onLogIn(session: Session) {
 	console.log(ngUser)
 	console.log("NG: Enabled")
 	ngEnabled = true
+
+	// This is here because it would run after the save is loaded
+	const data = JSON.parse(await ng.getCloudData(1))
+	if (data) {
+		console.log("Data in cloud save: ", data)
+		Object.assign(GameState, data)
+	}
 
 	let gottenMedals = await ng.getMedals()
 	let gottenMedalsIds = gottenMedals.filter(medal => medal.unlocked == true).map(medal => medal.id)

@@ -1,7 +1,9 @@
+import ng from "newgrounds.js"
 import { clickVars } from "./game/hexagon"
 import { powerupTypes } from "./game/powerups"
 import { percentage, saveAnim } from "./game/utils"
 import { ROOT } from "./main"
+import { ngEnabled, ngUser } from "./newgrounds"
 import { musicHandler, stopAllSounds } from "./sound"
 
 export class saveColor {
@@ -88,9 +90,10 @@ class _GameState {
 		if (this.scoreAllTime < 25) return
 		setData("hexagon-save", this)
 		if (anim) saveAnim()
+		if (ngEnabled && ngUser) ng.setCloudData(1, JSON.stringify(this))
 	}
 
-	load() {
+	loadFromStorage() {
 		const newSave = new _GameState()
 		
 		let gottenData = getData("hexagon-save") as _GameState
