@@ -17,7 +17,7 @@ import { medalsWinContent } from "../medalsWin.ts";
 import { hexColorWinContent } from "../color/hexColorWin.ts";
 import { bgColorWinContent } from "../color/bgColorWin.ts";
 import { leaderboardsWinContent } from "../leaderboardsWin.ts";
-import { hoverController } from "../../hovers/hoverManaging.ts";
+import { hoverController } from "../../../hoverManaging.ts";
 
 export let infoForWindows = {}
 

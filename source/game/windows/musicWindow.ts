@@ -4,9 +4,8 @@ import { manageMute, musicHandler, playMusic, playSfx, scratchSong } from "../..
 import { checkForUnlockable, isAchievementUnlocked } from "../unlockables/achievements";
 import { bop, formatTime, getPositionOfSide } from "../utils";
 import { GameObj, SpriteComp } from "kaplay";
-import { positionSetter } from "../plugins/positionSetter";
-import { insideWindowHover } from "../hovers/insideWindowHover";
 import { isWindowOpen } from "./windows-api/windowManaging";
+import { hoverController } from "../../hoverManaging";
 
 export let songs = {
 	"clicker.wav": { name: "clicker.wav", idx: 0, speed: 2.5, cover: "wav", duration: 61},
@@ -63,7 +62,7 @@ export function musicWinContent(winParent:GameObj) {
 		anchor("center"),
 		scale(1),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 		"pauseButton",
 		"musicButton",
 		"windowButton",
@@ -96,7 +95,7 @@ export function musicWinContent(winParent:GameObj) {
 		sprite("mutedButton"),
 		pos(172, -30),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 		anchor("center"),
 		scale(),
 		{
@@ -124,7 +123,7 @@ export function musicWinContent(winParent:GameObj) {
 		color(),
 		area({ scale: vec2(1, 1.25) }),
 		opacity(1),
-		insideWindowHover(winParent),
+		hoverController(),
 		anchor("center"),
 		{
 			update() {
@@ -184,7 +183,7 @@ export function musicWinContent(winParent:GameObj) {
 		pos(-30, 60),
 		area(),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 		anchor("center"),
 		"musicButton",
 		"windowButton",
@@ -196,7 +195,7 @@ export function musicWinContent(winParent:GameObj) {
 		pos(15, 60),
 		area(),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 		anchor("center"),
 		"musicButton",
 		"windowButton",
@@ -207,7 +206,7 @@ export function musicWinContent(winParent:GameObj) {
 		sprite("musicWinButtons", { anim: "skip", }),
 		pos(60, 60),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 		scale(),
 		anchor("center"),
 		"musicButton",
@@ -366,7 +365,7 @@ export function musicWinContent(winParent:GameObj) {
 	})
 
 	// fuck my small penis life
-	theOneBehind.onPressClick(() => {
+	theOneBehind.onClick(() => {
 		if (winParent.active == false) return
 		
 		let leftSideOfTheOneBehind = theOneBehind.screenPos().x - theOneBehind.width * 0.5

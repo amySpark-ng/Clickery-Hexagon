@@ -2,9 +2,7 @@ import { GameState, scoreManager } from "../../../gamestate";
 import { ROOT } from "../../../main";
 import { playSfx, sfxHandlers } from "../../../sound";
 import { addTooltip } from "../../additives";
-import { hoverController } from "../../hovers/hoverManaging";
-import { insideWindowHover } from "../../hovers/insideWindowHover";
-import { positionSetter } from "../../plugins/positionSetter";
+import { hoverController } from "../../../hoverManaging";
 import { blendColors, bop, formatNumber, getPositionOfSide, getRandomDirection, insertAtStart, parseAnimation } from "../../utils";
 import { addStoreElement, priceAscensionMultiplier } from "./storeElements";
 

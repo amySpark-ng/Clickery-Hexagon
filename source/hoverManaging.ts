@@ -1,5 +1,5 @@
 import { AreaComp, Comp, GameObj, Vec2 } from "kaplay";
-import { DragComp } from "../plugins/drag";
+import { DragComp } from "./game/plugins/drag";
 
 export interface HoverControllerComp extends Comp {
 	/** Determines wheter the object has higher priority for hover */

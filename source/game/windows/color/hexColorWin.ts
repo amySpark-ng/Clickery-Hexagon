@@ -1,8 +1,9 @@
 import { GameState } from "../../../gamestate";
 import { hexagon } from "../../hexagon";
+import { WindowGameObj } from "../windows-api/windowManaging";
 import { addDefaultButton, addNumbers, addRandomButton, addSlider, playSliderSound } from "./colorWindowElements";
 
-export function hexColorWinContent(winParent) {
+export function hexColorWinContent(winParent:WindowGameObj) {
 	
 	let redslider = addSlider({
 		parent: winParent,

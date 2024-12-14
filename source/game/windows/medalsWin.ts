@@ -1,16 +1,15 @@
 import { GameObj, SpriteComp } from "kaplay";
 import { DEBUG } from "../../main";
 import { addTooltip, mouse } from "../additives";
-import { insideWindowHover } from "../hovers/insideWindowHover";
 import { AchievementInterface, achievements, getAchievement, isAchievementUnlocked, unlockAchievement } from "../unlockables/achievements";
 import { blendColors, getPositionOfSide } from "../utils";
-import { Vec2 } from "kaplay/src";
 import { curDraggin, drag, setCurDraggin } from "../plugins/drag";
 import { playSfx } from "../../sound";
 import { ngEnabled } from "../../newgrounds";
 import ng from "newgrounds.js";
 import { GameState } from "../../gamestate";
 import * as env from "../../env.json"
+import { hoverController } from "../../hoverManaging";
 
 // Constants
 const totalColumns = 5;
@@ -137,7 +136,7 @@ function createMedalObject(gridPosition: { row: number, column: number }, medal_
 		anchor("center"),
 		layer("windows"), ,
 		area(),
-		insideWindowHover(medalsContainer),
+		hoverController(),
 		color(),
 		"medal",
 		{
@@ -347,19 +346,19 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 		layer("ui"),
 		area({ scale: vec2(2, 1) }),
 		opacity(0.5),
-		insideWindowHover(winParent),
+		hoverController(),
 		"elevator",
 	]);
 
 	let isDragging = false
 
-	elevator.startingHover(() => {
+	elevator.onHover(() => {
 		if (isDragging == false) {
 			tween(elevator.opacity, 1, 0.15, (p) => elevator.opacity = p, easings.easeOutQuad);
 		}
 	})
 
-	elevator.endingHover(() => {
+	elevator.onHoverEnd(() => {
 		if (isDragging == false) {
 			tween(elevator.opacity, 0.5, 0.15, (p) => elevator.opacity = p, easings.easeOutQuad);
 		}
@@ -391,11 +390,11 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 				anchor("bot"),
 				area(),
 				scale(),
-				insideWindowHover(winParent),
+				hoverController(),
 				"goober",
 			])
 
-			goober.onPressClick(() => {
+			goober.onClick(() => {
 				if (ngEnabled == true) {
 					if (GameState.stats.hasDevkyGoobered == false) {
 						GameState.stats.hasDevkyGoobered = true
@@ -430,8 +429,8 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 	medalsContainer.onKeyPress(["down", "right"], () => { updateElevator(1) })
 	medalsContainer.onKeyPress(["left", "up"], () => { updateElevator(-1) })
 
-	elevator.onPressClick(() => {
-		if (elevator.isBeingHovered == true) {
+	elevator.onClick(() => {
+		if (elevator.isHovering()) {
 			isDragging = true
 			// only doing it so it counts as it's there something being dragged
 			setCurDraggin(elevator)
@@ -442,12 +441,6 @@ function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
 		if (isDragging == true) {
 			isDragging = false
 			setCurDraggin(null)
-
-			if (!elevator.isHovering()) {
-				// can't do endHoverFunction because the object is behaving bad i hate him
-				elevator.endHoverAnim()
-			}
-
 		}
 	});
 

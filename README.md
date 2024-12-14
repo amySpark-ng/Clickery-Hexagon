@@ -23,8 +23,8 @@ Made in [KAPLAY](https://kaplayjs.com)
 There's also in-game credits
 
 ## RUNNING
-1. `pnpm i` - Installs all the dependencies
-2. `pnpm dev` - Starts hosting the game locally in localhost:8000
+1. `bun i` - Installs all the dependencies
+2. `bun dev` - Starts hosting the game locally in localhost:8000
 3. You have to make a `env.json` file in `src`, holding this:
 ```json
 {

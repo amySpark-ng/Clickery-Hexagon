@@ -1,12 +1,11 @@
 import { GameObj, Vec2 } from "kaplay"
 import { ROOT } from "../../../main"
 import { curDraggin, drag, setCurDraggin } from "../../plugins/drag"
-import { blendColors, bop, getPositionOfSide } from "../../utils"
+import { blendColors, bop } from "../../utils"
 import { playSfx } from "../../../sound"
 import { saveColor } from "../../../gamestate"
 import { drawDamnShadow } from "../../plugins/drawThings"
-import { insideWindowHover } from "../../hovers/insideWindowHover"
-import { mouse } from "../../additives"
+import { hoverController } from "../../../hoverManaging"
 
 const SLIDER_HANDLE_LERP = 0.2
 
@@ -96,7 +95,7 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 		area(),
 		scale(),
 		drag(true),
-		insideWindowHover(winParent),
+		hoverController(),
 		drawDamnShadow(2, 2, 0.5),
 		{
 			update() {
@@ -134,14 +133,12 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 		}
 	])
 
-	button.startingHover(() => {
+	button.onHover(() => {
 		tween(vec2(1), vec2(1.2), 0.15, (p) => button.scale = p)
-		mouse.play("point")
 	})
 
-	button.endingHover(() => {
+	button.onHoverEnd(() => {
 		tween(vec2(1.2), vec2(1), 0.15, (p) => button.scale = p)
-		mouse.play("cursor")
 	})
 
 	button.onClick(() => {
@@ -153,23 +150,14 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 
 	button.onMouseRelease(() => {
 		if (!winParent.active) return;
-		if (button.isBeingHovered == false) return
 		button.releaseDrop()
-
-		if (button.isHovering() == true) {
-			button.startHoverFunction()
-		}
-
-		else {
-			button.endHoverFunction()
-		}
 
 		winParent.canClose = true
 	})
 
 	// oh god
 	content.onClick(() => {
-		if (button.isBeingHovered == true) return;
+		if (button.isHovering()) return;
 		
 		let mappedValue = map(mousePos().x, content.screenPos().x, content.screenPos().x + content.width, opts.range[0], opts.range[1])
 		value = clamp(mappedValue, opts.range[0], opts.range[1])
@@ -236,6 +224,7 @@ export function addRandomButton(position: Vec2, parent: GameObj, sliders: slider
 		anchor("center"),
 		color(),
 		scale(),
+		hoverController(),
 		drawDamnShadow(2, 2, 0.5),
 	])
 

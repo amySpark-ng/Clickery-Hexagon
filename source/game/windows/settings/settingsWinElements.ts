@@ -7,7 +7,7 @@ import { addTooltip, mouse, tooltipInfo } from "../../additives"
 import { spsText } from "../../uicounters"
 import { addPlusScoreText } from "../../combo-utils"
 import { WindowGameObj } from "../windows-api/windowManaging"
-import { hoverController } from "../../hovers/hoverManaging"
+import { hoverController } from "../../../hoverManaging"
 
 const defaultTextSize = 36
 

@@ -8,7 +8,7 @@ import { addMinibutton, getMinibuttonPos, miniButtonXarea, miniButtonYarea, move
 import { manageWindow, allObjWindows, windowKey } from "./windowManaging";
 import { GameObj } from "kaplay";
 import { allPowerupsInfo } from "../../powerups";
-import { hoverController } from "../../hovers/hoverManaging";
+import { hoverController } from "../../../hoverManaging";
 
 export let folderObj:GameObj;
 export let folded = true;

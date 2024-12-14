@@ -1,8 +1,8 @@
 import { AreaComp, GameObj, ScaleComp } from "kaplay"
 import { ngEnabled, ngUser } from "../../newgrounds"
 import { positionSetter } from "../plugins/positionSetter";
-import { insideWindowHover } from "../hovers/insideWindowHover";
 import { playSfx } from "../../sound";
+import { hoverController } from "../../hoverManaging";
 
 const defFontSize = 36
 
@@ -39,13 +39,13 @@ export function makeCredit(theCredit:keyof typeof allCredits, parent:GameObj) {
 		sprite(`credits${capitalizeFirstLetter(theCredit)}`),
 		pos(),
 		area(),
-		insideWindowHover(parent),
+		hoverController(),
 		scale(),
 		anchor("center"),
 	])
 
 	if (allCredits[theCredit] != null) {
-		creditObj.onPressClick( () => {
+		creditObj.onClick( () => {
 			openURL(allCredits[theCredit])
 			playSfx("clickButton", { detune: rand(0, 50) })
 		})
@@ -93,11 +93,11 @@ export async function creditsWinContent(winParent:GameObj) {
 		anchor("center"),
 		area(),
 		scale(),
-		insideWindowHover(winParent),
+		hoverController(),
 	])
 
 	dummyHoverAnims(specialCredits)
-	specialCredits.onPressClick(() => {
+	specialCredits.onClick(() => {
 		openURL("https://github.com/amyspark-ng/clickery-hexagon-dev?tab=readme-ov-file#extra--special-thanks")
 		playSfx("clickButton", { detune: rand(0, 50) })
 	})
@@ -108,7 +108,7 @@ export async function creditsWinContent(winParent:GameObj) {
 		scale(),
 		anchor("center"),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 	])
 
 	let creditsHeart = winParent.add([
@@ -119,17 +119,17 @@ export async function creditsWinContent(winParent:GameObj) {
 	])
 
 	if (ngUser != null) {
-		playerCredit.onPressClick(() => {
+		playerCredit.onClick(() => {
 			openURL(`https://${ngUser.name}.newgrounds.com`)
 			playSfx("clickButton", { detune: rand(30, 70) })
 		})
 
-		playerCredit.startingHover(() => {
+		playerCredit.onHover(() => {
 			tween(playerCredit.scale, vec2(1.05), 0.15, (p) => playerCredit.scale = p, easings.easeOutQuad)
 			tween(creditsHeart.scale, vec2(1.05), 0.15, (p) => creditsHeart.scale = p, easings.easeOutQuad)
 		})
 	
-		playerCredit.endingHover(() => {
+		playerCredit.onHoverEnd(() => {
 			tween(playerCredit.scale, vec2(1), 0.15, (p) => playerCredit.scale = p, easings.easeOutQuad)
 			tween(creditsHeart.scale, vec2(1), 0.15, (p) => creditsHeart.scale = p, easings.easeOutQuad)
 		})

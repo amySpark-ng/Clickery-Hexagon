@@ -7,7 +7,7 @@ import { addTooltip } from "../../additives"
 import { allPowerupsInfo, powerupTypes, spawnPowerup } from "../../powerups"
 import { isHoveringUpgrade, storeElements, storePitchJuice } from "./storeWin"
 import { isAchievementUnlocked, unlockAchievement } from "../../unlockables/achievements"
-import { hoverController } from "../../hovers/hoverManaging"
+import { hoverController } from "../../../hoverManaging"
 import { WindowGameObj } from "../windows-api/windowManaging"
 
 export let storeElementsInfo = {

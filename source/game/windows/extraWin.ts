@@ -10,7 +10,7 @@ import { addMinibutton } from "./windows-api/minibuttons";
 import { openWindowButton } from "./windows-api/openWindowButton";
 import { destroyExclamation } from "../unlockables/windowUnlocks";
 import { GameObj, PosComp } from "kaplay";
-import { hoverController } from "../hovers/hoverManaging";
+import { hoverController } from "../../hoverManaging";
 
 export let gridContainer:GameObj<PosComp>;
 let currentClosest:GameObj;

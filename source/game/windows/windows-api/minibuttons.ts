@@ -9,7 +9,7 @@ import { GameObj, PosComp, SpriteComp, SpriteData, Vec2 } from "kaplay";
 import { openWindowButton } from "./openWindowButton";
 import { folded, folderObj } from "./folderObj";
 import { destroyExclamation } from "../../unlockables/windowUnlocks";
-import { hoverController } from "../../hovers/hoverManaging";
+import { hoverController } from "../../../hoverManaging";
 
 type minibuttonOpt = {
 	windowKey:windowKey

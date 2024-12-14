@@ -16,7 +16,7 @@ import { ngEnabled, postEverything } from "../newgrounds.ts"
 import { drawDumbOutline } from "./plugins/drawThings.ts"
 import { allObjWindows } from "./windows/windows-api/windowManaging.ts"
 import ng from "newgrounds.js"
-import { hoverManaging } from "./hovers/hoverManaging.ts"
+import { hoverManaging } from "../hoverManaging.ts"
 
 let panderitoLetters = "panderito".split("")
 export let panderitoIndex = 0

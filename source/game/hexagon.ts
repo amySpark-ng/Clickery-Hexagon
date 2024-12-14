@@ -11,7 +11,7 @@ import { checkForUnlockable, isAchievementUnlocked, unlockAchievement } from "./
 import { ROOT } from "../main.ts";
 import { mouse } from "./additives.ts";
 import { isWindowUnlocked } from "./unlockables/windowUnlocks.ts";
-import { hoverController } from "./hovers/hoverManaging.ts";
+import { hoverController } from "../hoverManaging.ts";
 import { AreaCompOpt } from "kaplay";
 
 export let clickVars = {

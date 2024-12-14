@@ -1,13 +1,10 @@
-import { GameObj, PosComp, TextComp, Vec2 } from "kaplay"
+import { GameObj, Vec2 } from "kaplay"
 import { GameState, scoreManager } from "../../gamestate"
 import { startAscending } from "../ascension/ascension"
-import { allPowerupsInfo} from "../powerups"
 import { bop, formatNumber, formatNumberSimple } from "../utils"
 import { waver } from "../plugins/wave"
-import { positionSetter } from "../plugins/positionSetter"
 import { ROOT } from "../../main"
-import { insideWindowHover } from "../hovers/insideWindowHover"
-import { makeSmallParticles } from "../plugins/confetti"
+import { hoverController } from "../../hoverManaging"
 
 let objectsPositions = {
 	mage_hidden: 450,
@@ -76,7 +73,7 @@ function addAscendButton(position: Vec2, winParent:GameObj) {
 		pos(position),
 		anchor("center"),
 		area(),
-		insideWindowHover(winParent),
+		hoverController(),
 		scale(),
 		opacity(),
 		{
@@ -87,7 +84,7 @@ function addAscendButton(position: Vec2, winParent:GameObj) {
 		}
 	])
 
-	eye.startingHover(() => {
+	eye.onHover(() => {
 		if (GameState.ascension.mana > 0) {
 			tween(scroll.scale.x, 1, 0.15, (p) => scroll.scale.x = p, easings.easeOutQuint)
 			eye.play("woke")
@@ -101,7 +98,7 @@ function addAscendButton(position: Vec2, winParent:GameObj) {
 		tween(1, 1.05, 0.15, (p) => eye.scale.x = p, easings.easeOutQuint)
 	})
 
-	eye.endingHover(() => {
+	eye.onHoverEnd(() => {
 		eye.play("dumb")
 		tween(scroll.scale.x, 0, 0.15, (p) => scroll.scale.x = p, easings.easeOutQuint)
 		
@@ -109,7 +106,7 @@ function addAscendButton(position: Vec2, winParent:GameObj) {
 		tween(eye.scale.x, 1, 0.15, (p) => eye.scale.x = p, easings.easeOutQuint)
 	})
 
-	eye.onPressClick(() => {
+	eye.onClick(() => {
 		bop(eye)
 		startAscending()
 	})

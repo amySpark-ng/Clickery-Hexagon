@@ -6,7 +6,7 @@ import { arrToColor, bop, formatNumber, formatTime, getPosInGrid, getPositionOfS
 import { positionSetter } from "./plugins/positionSetter";
 import { checkForUnlockable } from "./unlockables/achievements";
 import { addTooltip } from "./additives";
-import { hoverController } from "./hovers/hoverManaging";
+import { hoverController } from "../hoverManaging";
 
 class Powerup {
 	sprite: string;
