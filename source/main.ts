@@ -35,6 +35,7 @@ let kaplayOpts = {
 	stretch: false,
 	letterbox: false,
 	maxFPS: 120,
+	tagsAsComponents: true,
 } as KAPLAYOpt
 
 runInTauri(() => {

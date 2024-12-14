@@ -5,7 +5,7 @@ import { bop, getPosInGrid, swap } from "../../utils";
 import { mouse } from "../../additives";
 import { infoForWindows, manageWindow, buttonSpacing, openWindow, allObjWindows, windowKey, } from "./windowManaging";
 import { GameState } from "../../../gamestate";
-import { GameObj, PosComp, SpriteComp, SpriteData, Vec2 } from "kaplay";
+import { GameObj, PosComp, Quad, SpriteComp, SpriteData, Vec2 } from "kaplay";
 import { openWindowButton } from "./openWindowButton";
 import { folded, folderObj } from "./folderObj";
 import { destroyExclamation } from "../../unlockables/windowUnlocks";
@@ -30,13 +30,13 @@ export function moveButtonToPos(minibutton:GameObj, index:number) {
 }
 
 export function addMinibutton(opts:minibuttonOpt) {
-	let quad; // don't touch this
+	let quad:Quad; // don't touch this
 
 	getSprite("bean")?.then(quady => {
-		quad = quady
+		quad = quady.frames[0]
 	})
 
-	let idxForInfo = infoForWindows[opts.windowKey].idx
+	let idxForInfo = infoForWindows[opts.windowKey].idx as number
 
 	let destinedPosition:Vec2;
 	if (opts.destPosition) destinedPosition = opts.destPosition
@@ -48,6 +48,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 
 	/** The string for the sprite of the minibutton */
 	const theSprite = `icon_${infoForWindows[opts.windowKey].icon ?? opts.windowKey.replace("Win", "")}`
+	
 	const currentMinibutton = add([
 		sprite(theSprite),
 		pos(opts.initialPosition),
@@ -70,7 +71,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 			idxForInfo: idxForInfo,
 			taskbarIndex: opts.taskbarIndex,
 			window: get(`${opts.windowKey}`, { recursive: true })[0] ?? null,
-			windowInfo: infoForWindows[opts.windowKey],
+			windowInfo: null,
 			windowKey: opts.windowKey,
 			nervousSpinSpeed: 10,
 			saturation: 0,
@@ -138,7 +139,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 				}
 
 				else {
-					this.destinedPosition = getMinibuttonPos(this.taskbarIndex)
+					this.destinedPosition.x = getMinibuttonPos(this.taskbarIndex).x
 				}
 			},
 
@@ -217,14 +218,11 @@ export function addMinibutton(opts:minibuttonOpt) {
 					let currentSlot = get(`slot_${this.taskbarIndex}`)[0]
 					currentSlot?.fadeOut(0.32).onEnd(() => currentSlot?.destroy())
 				})
-
-				// reset their angles
-				get("minibutton").forEach(element => {
-					tween(element.angle, 0, 0.32, (p) => element.angle = p, easings.easeOutQuint)
-				});
 			},
 		}
-	])
+	]);
+	// having this be of type any caused the typing of the object to not work, that's weird right?
+	currentMinibutton.windowInfo = infoForWindows[opts.windowKey]
 
 	let isHovering = false
 
@@ -254,6 +252,8 @@ export function addMinibutton(opts:minibuttonOpt) {
 				else currentMinibutton.play("default")
 			}
 		}
+
+		currentMinibutton.area.offset = vec2(10)
 	})
 
 	if (currentMinibutton.extraMb) {
@@ -300,29 +300,19 @@ export function addMinibutton(opts:minibuttonOpt) {
 	currentMinibutton.onHover(() => {
 		if (folded || curDraggin || currentMinibutton.dragging) return
 		playSfx("hoverMiniButton", {detune: 100 * currentMinibutton.windowInfo.idx / 4})
-		tween(currentMinibutton.pos.y, currentMinibutton.destinedPosition.y - 5, 0.32, (p) => currentMinibutton.pos.y = p, easings.easeOutQuint)
-		tween(currentMinibutton.scale, vec2(1.05), 0.32, (p) => currentMinibutton.scale = p, easings.easeOutQuint)
+		currentMinibutton.destinedPosition.y -= 5
 
-		if (currentMinibutton.extraMb || currentMinibutton.dragging) return
-		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
-		tween(currentMinibutton.pos.x, newXPos, 0.32, (p) => currentMinibutton.pos.x = p, easings.easeOutQuint)
+		tween(currentMinibutton.scale, vec2(1.05), 0.32, (p) => currentMinibutton.scale = p, easings.easeOutQuint)
 	})
 
 	currentMinibutton.onHoverEnd(() => {
 		if (folded || currentMinibutton.dragging) return
-		tween(currentMinibutton.pos.y, currentMinibutton.destinedPosition.y, 0.32, (p) => currentMinibutton.pos.y = p, easings.easeOutQuint)
-		tween(currentMinibutton.angle, 0, 0.32, (p) => currentMinibutton.angle = p, easings.easeOutQuint)
+		currentMinibutton.destinedPosition.y += 5
 		tween(currentMinibutton.scale, vec2(1), 0.32, (p) => currentMinibutton.scale = p, easings.easeOutQuint)
 		currentMinibutton.defaultScale = vec2(1.05)
-		
-		if (currentMinibutton.extraMb || currentMinibutton.dragging) return
-		
-		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
-		tween(currentMinibutton.pos.x, newXPos, 0.32, (p) => currentMinibutton.pos.x = p, easings.easeOutQuint)
 	})
 
 	currentMinibutton.onPress(() => {
-		// if (allObjWindows.isHoveringAWindow || allObjWindows.isDraggingAWindow) return
 		currentMinibutton.click()
 	})
 	

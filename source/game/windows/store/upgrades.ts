@@ -5,6 +5,7 @@ import { addTooltip } from "../../additives";
 import { hoverController } from "../../../hoverManaging";
 import { blendColors, bop, formatNumber, getPositionOfSide, getRandomDirection, insertAtStart, parseAnimation } from "../../utils";
 import { addStoreElement, priceAscensionMultiplier } from "./storeElements";
+import { AudioPlay, KEventController } from "kaplay";
 
 const tooltipLerp = 0.65
 
@@ -26,8 +27,6 @@ export let upgradeInfo = {
 	"c_5": { value: 64, price: 500_000 },
 }
 
-const upgradePriceIncrease = 0.030
-
 export function isUpgradeBought(upgradeId:string):boolean {
 	return (GameState.upgradesBought.includes(upgradeId))
 }
@@ -44,11 +43,11 @@ export function addUpgrades(elementParent:ReturnType<typeof addStoreElement>) {
 		if (i == 3) {desiredPos.y += spacing.y; desiredPos.x = initialPos.x}
 		desiredPos.x += spacing.x
 		
-		let progressSound = null
+		let progressSound:AudioPlay = null
 		
-		let downEvent = null
+		let downEvent:KEventController = null
 		
-		let elementColor = elementParent.is("clickersElement") ? rgb(49, 156, 222) : rgb(49, 222, 58)
+		let elementColor = elementParent.is("clickersElement") ? rgb(0, 84, 136) : rgb(49, 222, 58)
 		let newColor = blendColors(elementColor.lighten(310), elementColor, map(i, 0, 6, 0.5, 1))
 		
 		let upgradeObj = elementParent.add([

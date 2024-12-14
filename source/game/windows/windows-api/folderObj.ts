@@ -124,7 +124,7 @@ export function addFolderObj() {
 					if (this.interactable == true && isKeyPressed("space")) {
 						this.manageFold()
 						this.deleteSlots()
-						bop(this)
+						// bop(this)
 					}
 				}
 
@@ -136,7 +136,7 @@ export function addFolderObj() {
 
 	theFolderObj.onClick(() => {
 		folderObj.manageFold()
-		bop(folderObj)
+		// bop(folderObj)
 	})
 
 	// this can't be attached to the buttons because you won't be able to call the event if the buttons don't exist

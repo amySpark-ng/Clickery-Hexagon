@@ -175,7 +175,7 @@ export function addGridButton(windowKey:windowKey) {
 			closestDistance = Infinity;
 	
 			// Get all minibuttons
-			minibuttons = get("minibutton").filter(minibutton => !minibutton.extraMb);
+			minibuttons = get("minibutton").filter(minibutton => !minibutton.extraMb) as ReturnType<typeof addMinibutton>[];
 			
 			// Check the distance to each minibutton
 			minibuttons.forEach(minibutton => {

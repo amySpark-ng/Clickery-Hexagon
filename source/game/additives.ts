@@ -344,7 +344,8 @@ export function addTooltip(obj:GameObj, opts?:tooltipOpts) : tooltipInfo {
 	opts.textSize = opts.textSize ?? 20;
 
 	opts.layer = opts.layer ?? "windows"
-	opts.z = opts.z ?? 0
+	// if a z was put, use it, if not, if obj has z, do obj.z + 1, if not use 10
+	opts.z = opts.z ?? obj.z ? obj.z + 1 : 10
 
 	let sizeOfText = { x: 0, y: 0 };
 

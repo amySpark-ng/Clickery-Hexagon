@@ -4,15 +4,18 @@ import { DragComp } from "./game/plugins/drag";
 export interface HoverControllerComp extends Comp {
 	/** Determines wheter the object has higher priority for hover */
 	clickIndex: number;
+	/** A custom hover scale passed, will be 1 most of the times */
+	customHoverScale: Vec2,
 }
 
 /** Component that gives the clickIndex property */
-export function hoverController(clickIndex: number = 0) : HoverControllerComp {
+export function hoverController(clickIndex: number = 0, customScale: Vec2 = vec2(1)) : HoverControllerComp {
 	let oldestParentWithHover = null;
 	
 	return {
 		id: "hover",
 		clickIndex: clickIndex,
+		customHoverScale: customScale,
 		add() {
 			oldestParentWithHover = this.parent;
 		},
@@ -47,7 +50,7 @@ export function hoverManaging() {
 		// for dragged objects
 		const draggedObject = hoverObjects.find((obj) => obj.dragging == true)
 		if (draggedObject) {
-			draggedObject.area.scale = vec2(1)
+			draggedObject.area.scale = draggedObject.customHoverScale
 			const allOtherObjects = hoverObjects.filter((filtObj) => filtObj != draggedObject)
 			allOtherObjects.forEach((obj) => obj.area.scale = vec2(0))
 			return;
@@ -55,7 +58,7 @@ export function hoverManaging() {
 
 		// no obj is being hovered
 		if (!hoverObjects.some((obj) => obj.isHovering())) {
-			hoverObjects.forEach((obj) => obj.area.scale = vec2(1))
+			hoverObjects.forEach((obj) => obj.area.scale = obj.customHoverScale)
 			return;
 		}
 
@@ -65,7 +68,7 @@ export function hoverManaging() {
 		hoverObjects.sort((a, b) => b.clickIndex - a.clickIndex).forEach((curObj, index) => {
 			const higherHoveredObject = hoverObjects.find((obj) => obj.clickIndex > curObj.clickIndex && obj.isHovering())
 			if (!higherHoveredObject) {
-				curObj.area.scale = vec2(1)
+				curObj.area.scale = curObj.customHoverScale
 				return
 			};
 

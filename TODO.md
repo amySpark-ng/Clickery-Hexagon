@@ -3,7 +3,6 @@
 <!-- ================ -->
 
 THE B-UGS
-<!-- for the life of me i couldn't fix this im sorry -->
 - Refactor window activating and reactivating
 - Figure out a way to make it so scale doesn't affect area for certain objects (minibuttons, upgrades on store windows)
 - Refactor minibutton working i guess

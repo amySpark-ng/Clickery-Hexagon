@@ -1,6 +1,6 @@
 import ng, { User } from "newgrounds.js";
 import * as env from "./env.json"
-import { GameState } from "./gamestate";
+import { _GameState, GameState } from "./gamestate";
 import { positionSetter } from "./game/plugins/positionSetter";
 import { bop } from "./game/utils";
 import { gameBg } from "./game/additives";
@@ -42,10 +42,18 @@ export async function onLogIn(session: Session) {
 	ngEnabled = true
 
 	// This is here because it would run after the save is loaded
-	const data = JSON.parse(await ng.getCloudData(1))
+	const data = JSON.parse(await ng.getCloudData(1)) as _GameState
 	if (data) {
-		console.log("Data in cloud save: ", data)
-		Object.assign(GameState, data)
+		if (GameState.scoreAllTime > data.scoreAllTime) {
+			ng.setCloudData(1, JSON.stringify(GameState))
+			console.log("Current data is better than cloud, overwriting...")
+			return;
+		}
+
+		else {
+			console.log("Setting save to data in cloud save: ", data)
+			Object.assign(GameState, data)
+		}
 	}
 
 	let gottenMedals = await ng.getMedals()
@@ -129,7 +137,7 @@ export async function newgroundsSceneContent() {
 		])
 		
 		// does actual api stuff
-		const loginResult = await ng.login()
+		await ng.login()
 		const loggedIn = await ng.isLoggedIn()
 		const session = await ng.getSession()
 

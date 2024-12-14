@@ -1,4 +1,4 @@
-import { GameObj, SpriteComp } from "kaplay";
+import { ColorComp, GameObj, OpacityComp, SpriteComp } from "kaplay";
 import { DEBUG } from "../../main";
 import { addTooltip, mouse } from "../additives";
 import { AchievementInterface, achievements, getAchievement, isAchievementUnlocked, unlockAchievement } from "../unlockables/achievements";
@@ -16,7 +16,6 @@ const totalColumns = 5;
 const totalRows = 7;
 const initialPos = { x: -132, y: 42 };
 const spacing = { x: 66, y: 65 };
-const availableAchievements = achievements.slice(0, 49);
 let medalsContainer: GameObj | undefined;
 let medalMap: Map<string, GameObj> = new Map();
 
@@ -144,6 +143,14 @@ function createMedalObject(gridPosition: { row: number, column: number }, medal_
 			achievementId: medal_ID,
 			row: gridPosition.row,
 			column: gridPosition.column,
+			add() {
+				if (this.achievementId == "extra.theSlot") {
+					return; 
+				}
+
+				this.use("ignorepoint")
+			},
+			
 			update() {
 				updateMedalState(this);
 			},
@@ -175,8 +182,9 @@ function updateMedalState(medalObj:GameObj) {
 }
 
 /**
-* Gets the color and sprite of the medal when it's locked 
-* Runs on update
+* Updates the color and sprite of the medal when it's locked 
+* @param medalObj The medal object to update
+* @param theAchievement The achievement associated with the medal
 */
 function manageLockedMedalApp(medalObj:GameObj, theAchievement:AchievementInterface) {
 	const PURPLE = blendColors(RED, BLUE, 0.5);
@@ -213,14 +221,14 @@ function manageLockedMedalApp(medalObj:GameObj, theAchievement:AchievementInterf
 }
 
 // Handle medal click
-function handleMedalClick(medalObj) {
+function handleMedalClick(medalObj:GameObj) {
 	if (medalObj.achievementId === "extra.theSlot" && !isAchievementUnlocked(medalObj.achievementId)) {
 		unlockAchievement(medalObj.achievementId);
 	}
 }
 
 // Handle medal hover
-function handleMedalHover(medalObj) {
+function handleMedalHover(medalObj:GameObj) {
 	const theAchievement = getAchievement(medalObj.achievementId);
 	let title = formatTooltipText(theAchievement.title, 50);
 	let description = formatTooltipText(theAchievement.description, 50);
@@ -318,8 +326,6 @@ function scroll(direction: "up" | "down") {
 }
 
 function addScrollBar(medalsContainer:GameObj, totalScrolls = 3) {
-	const winParent = medalsContainer.parent;
-	
 	if (!medalsContainer) {
 		console.error("medalsContainer is not defined in addScrollBar");
 		return;

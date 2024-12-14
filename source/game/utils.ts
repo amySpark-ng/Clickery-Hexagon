@@ -395,7 +395,7 @@ export function bop(obj:GameObj, howMuch = 0.1, bopEasing = easings.easeOutQuint
 	})
 }
 
-export function shrink(obj) {
+export function shrink(obj:GameObj) {
 	if (!obj.is("scale")) obj.use(scale(1))
 	if (!obj.shrinkDefScale) obj.shrinkDefScale = obj.scale
 	

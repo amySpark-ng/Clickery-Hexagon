@@ -20,7 +20,7 @@ export class saveColor {
     }
 }
 
-class _GameState {	
+export class _GameState {	
 	score = 0
 	scoreThisRun = 0
 	scoreAllTime = 0
@@ -135,17 +135,18 @@ class _GameState {
 		this.settings.music.muted = true
 	}
 
-	/**
-	 *  Every time there's a change to the gamestate save this has to be changed
-	 */
 	// 0.9 was in the last days before the release of the game
 	// 0.91 was has been gnomed, devky goobered
 	// 1.0 will be in the moment of release
+	/**
+	 *  Every time there's a change to the gamestate save this has to be changed
+	 */
 	saveVersion = 1
 }
 
 export let GameState = new _GameState()
 
+/** Class that handles some calculations regarding score */
 class _scoreManager {
 	combo = 1
 	
@@ -272,7 +273,8 @@ class _scoreManager {
 
 		return manaPerSecond;
 	}
-	
+
+	/** Resets the run when ascending */
 	resetRun() {
 		tween(GameState.score, 0, 0.32, (p) => GameState.score = p, easings.easeOutCirc)
 		tween(GameState.scoreThisRun, 0, 0.32, (p) => GameState.scoreThisRun = p, easings.easeOutCirc)
