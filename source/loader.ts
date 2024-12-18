@@ -402,24 +402,6 @@ function loadAllSprites() {
 
 	//#region Music
 	loadSprite("musicWin", "sprites/windows/musicWin/musicWin.png")
-	loadSpriteAtlas("sprites/windows/musicWin/discs.png", {
-		"discs": {
-			"x": 0,
-			"y": 0,
-			"width": 50 * 6,
-			"height": 50,
-			"sliceX": 6,
-			"sliceY": 1,
-			"anims": {
-				"wav": 0,
-				"ok": 1,
-				"bb1": 2,
-				"bb2": 3,
-				"cat": 4,
-				"bb3": 5,
-			}
-		}
-	})
 	loadSprite("musicDisc", "sprites/windows/musicWin/musicDisc.png")
 	loadSprite("musicWinButtons", "sprites/windows/musicWin/musicWinButtons.png", {
 		sliceX: 4,

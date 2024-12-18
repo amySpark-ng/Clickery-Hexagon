@@ -145,6 +145,7 @@ export function addPlusScoreText(opts:plusScoreOpts) {
 		scale(),
 		anchor("center"),
 		layer("ui"),
+		z(0),
 		"plusScoreText",
 		{
 			update() {

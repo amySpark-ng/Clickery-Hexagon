@@ -54,9 +54,6 @@ export function musicWinContent(winParent:GameObj) {
 
 	let disc = winParent.add([
 		sprite("musicDisc"),
-		// sprite("discs", {
-		// 	anim: `${songs[Object.keys(songs)[currentSongIdx]].cover}`
-		// }),
 		pos(-152, -17),
 		rotate(angleOfDisc),
 		anchor("center"),

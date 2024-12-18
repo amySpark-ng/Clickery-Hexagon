@@ -79,7 +79,7 @@ export function addMouse() {
 					// this runs when the obj is being hovered
 					else {
 						if (isMouseDown("left")) {
-							if (hoverObj.is("ignorepoint") && !hoverObj.dragging) return;
+							if (hoverObj.is("ignorepoint") && !hoverObj.dragging || hoverObj.is("ignoregrab")) return;
 							this.play("grab")
 						}
 

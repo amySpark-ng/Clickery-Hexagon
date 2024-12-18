@@ -10,7 +10,7 @@ import { GameObj } from "kaplay";
 import { allPowerupsInfo } from "../../powerups";
 import { hoverController } from "../../../hoverManaging";
 
-export let folderObj:GameObj;
+export let folderObj:ReturnType<typeof addFolderObj>;
 export let folded = true;
 let timeSinceFold = 0;
 
@@ -40,6 +40,7 @@ export function addFolderObj() {
 		z(0),
 		scale(),
 		anchor("center"),
+		opacity(),
 		hoverController(3),
 		"folderObj",
 		{
@@ -115,24 +116,24 @@ export function addFolderObj() {
 					destroy(minibuttonslot)
 				})
 			},
-
-			update() {
-				this.flipX = folded ? true : false
-				
-				if (curDraggin?.is("gridMiniButton") || curDraggin?.is("minibutton")) return
-				if (!movingMinibuttons) {
-					if (this.interactable == true && isKeyPressed("space")) {
-						this.manageFold()
-						this.deleteSlots()
-						// bop(this)
-					}
-				}
-
-				if (timeSinceFold < 0.25) timeSinceFold += dt()
-				if (timeSinceSkip < 5) setTimeSinceSkip(timeSinceSkip + dt())
-			}
 		}
 	])
+
+	theFolderObj.onUpdate(() => {
+		theFolderObj.flipX = folded ? true : false
+		
+		if (curDraggin?.is("gridMiniButton") || curDraggin?.is("minibutton")) return
+		if (!movingMinibuttons) {
+			if (theFolderObj.interactable == true && isKeyPressed("space")) {
+				theFolderObj.manageFold()
+				theFolderObj.deleteSlots()
+				// bop(theFolderObj)
+			}
+		}
+
+		if (timeSinceFold < 0.25) timeSinceFold += dt()
+		if (timeSinceSkip < 5) setTimeSinceSkip(timeSinceSkip + dt())
+	})
 
 	theFolderObj.onClick(() => {
 		folderObj.manageFold()

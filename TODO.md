@@ -3,10 +3,7 @@
 <!-- ================ -->
 
 THE B-UGS
-- Refactor window activating and reactivating
-- Figure out a way to make it so scale doesn't affect area for certain objects (minibuttons, upgrades on store windows)
-- Refactor minibutton working i guess
-- Add clickIndex for powerups
+- If you click too fast you can leave the folderObj like this < with no buttons
 - Leaving a grid button in taskbar causes it to open for some strange reason
 
 FEATURES

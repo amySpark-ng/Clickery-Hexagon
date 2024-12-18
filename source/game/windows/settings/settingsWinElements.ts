@@ -429,6 +429,7 @@ export function addMinigame(otherButtonsBg:GameObj) {
 				value: 1,
 				cursorRelated: false
 			})
+			thing.z = 10
 			thing.scale = vec2(0.4)
 			thing.layer = otherButtonsBg.parent.layer
 			GameState.stats.timesClicked += 1

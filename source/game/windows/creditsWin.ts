@@ -4,16 +4,17 @@ import { positionSetter } from "../plugins/positionSetter";
 import { playSfx } from "../../sound";
 import { hoverController } from "../../hoverManaging";
 import { WindowGameObj } from "./windows-api/windowManaging";
+import { getPosInGrid } from "../utils";
 
 const defFontSize = 36
 
 const allCredits = {
 	"code": "https://amyspark-ng.newgrounds.com",
 	"art": "https://devkyRD.newgrounds.com",
-	"design": "https://lajbel.newgrounds.com",
-	"shader": null,
 	"playtest": "https://Khriz28.newgrounds.com",
+	"design": "https://lajbel.newgrounds.com",
 	"desktop": "https://EliCardoso.newgrounds.com",
+	"shader": null,
 }
 
 function capitalizeFirstLetter(string:string) {
@@ -43,9 +44,14 @@ export function makeCredit(theCredit:keyof typeof allCredits) {
 		hoverController(),
 		scale(),
 		anchor("center"),
+		"ignoregrab"
 	])
 
-	if (allCredits[theCredit] != null) {
+	if (allCredits[theCredit] == null) {
+		creditObj.unuse("hover")
+	}
+
+	else {
 		creditObj.onClick( () => {
 			openURL(allCredits[theCredit])
 			playSfx("clickButton", { detune: rand(0, 50) })
@@ -64,30 +70,15 @@ export async function creditsWinContent(winParent:WindowGameObj) {
 		anchor("center"),
 	])
 
-	// #region first column
-	const firstColumnX = -85
-	let codeCredit = winParent.add(makeCredit("code"))
-	codeCredit.pos = vec2(firstColumnX, -70)
-
-	let designCredit = winParent.add(makeCredit("design"))
-	designCredit.pos = vec2(firstColumnX, 14)
-
-	let playtestCredit = winParent.add(makeCredit("playtest"))
-	playtestCredit.pos = vec2(firstColumnX, 88)
-	// #endregion
-
-	// #region second column
-	const secondColumnX = 85
-	let artCredit = winParent.add(makeCredit("art"))
-	artCredit.pos = vec2(secondColumnX, -70)
-
-	let shaderCredit = winParent.add(makeCredit("shader"))
-	shaderCredit.pos = vec2(secondColumnX, 14)
-	shaderCredit.unuse("hover")
-
-	let desktopCredit = winParent.add(makeCredit("desktop"))
-	desktopCredit.pos = vec2(secondColumnX, 88)
-	// #endregion
+	Object.keys(allCredits).forEach((key, index) => {
+		const madeCredit = makeCredit(key as keyof typeof allCredits)
+		const creditobj = winParent.add(madeCredit)
+		let row = Math.floor(index / 3)
+		let column = index % 3
+		
+		const thePos = getPosInGrid(vec2(-100, -55), row, column, vec2(100, 125))
+		creditobj.pos = thePos
+	})
 
 	let specialCredits = winParent.add([
 		text("Enysmo, Candy&Carmel, OliverIsHere\nGGBot, WebadaZzz", { align: "center", size: 30 }),
