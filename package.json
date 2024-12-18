@@ -20,7 +20,7 @@
   "dependencies": {
     "@tauri-apps/api": "2.0.0-rc.4",
     "@tauri-apps/plugin-fs": "2.0.0-rc.2",
-    "kaplay": "^3001.1.0-beta.0",
+    "kaplay": "3001.0.0",
     "newgrounds.js": "^4.1.1"
   },
   "devDependencies": {

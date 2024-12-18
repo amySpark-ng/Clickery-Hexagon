@@ -143,7 +143,7 @@ export function openWindow(windowKey:windowKey) {
 		"ignorepoint",
 		`${windowKey}`,
 		{
-			idx: infoForWindows[windowKey].idx,
+			idx: infoForWindows[windowKey].idx as number,
 			windowKey: windowKey,
 			active: true,
 			xButton: null,

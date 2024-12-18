@@ -3,6 +3,7 @@ import { ngEnabled, ngUser } from "../../newgrounds"
 import { positionSetter } from "../plugins/positionSetter";
 import { playSfx } from "../../sound";
 import { hoverController } from "../../hoverManaging";
+import { WindowGameObj } from "./windows-api/windowManaging";
 
 const defFontSize = 36
 
@@ -15,7 +16,7 @@ const allCredits = {
 	"desktop": "https://EliCardoso.newgrounds.com",
 }
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string:string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -23,17 +24,17 @@ function openURL(url:string) {
 	window.open(url, '_blank').focus();
 }
 
-function dummyHoverAnims(theObj:GameObj) {
-	theObj.startingHover(() => {
+function dummyHoverAnims(theObj:GameObj<AreaComp | ScaleComp>) {
+	theObj.onHover(() => {
 		tween(theObj.scale, vec2(1.05), 0.15, (p) => theObj.scale = p, easings.easeOutQuad)
 	})
 
-	theObj.endingHover(() => {
+	theObj.onHoverEnd(() => {
 		tween(theObj.scale, vec2(1), 0.15, (p) => theObj.scale = p, easings.easeOutQuad)
 	})
 }
 
-export function makeCredit(theCredit:keyof typeof allCredits, parent:GameObj) {
+export function makeCredit(theCredit:keyof typeof allCredits) {
 	
 	let creditObj = make([
 		sprite(`credits${capitalizeFirstLetter(theCredit)}`),
@@ -56,34 +57,35 @@ export function makeCredit(theCredit:keyof typeof allCredits, parent:GameObj) {
 	return creditObj;
 }
 
-export async function creditsWinContent(winParent:GameObj) {
+export async function creditsWinContent(winParent:WindowGameObj) {
 	winParent.add([
 		pos(0, -160),
 		text("Clickery Hexagon was made\nby these awesome people", { align: "center", size: defFontSize }),
 		anchor("center"),
 	])
-	
+
 	// #region first column
 	const firstColumnX = -85
-	let codeCredit = winParent.add(makeCredit("code", winParent))
+	let codeCredit = winParent.add(makeCredit("code"))
 	codeCredit.pos = vec2(firstColumnX, -70)
 
-	let designCredit = winParent.add(makeCredit("design", winParent))
+	let designCredit = winParent.add(makeCredit("design"))
 	designCredit.pos = vec2(firstColumnX, 14)
 
-	let playtestCredit = winParent.add(makeCredit("playtest", winParent))
+	let playtestCredit = winParent.add(makeCredit("playtest"))
 	playtestCredit.pos = vec2(firstColumnX, 88)
 	// #endregion
 
 	// #region second column
 	const secondColumnX = 85
-	let artCredit = winParent.add(makeCredit("art", winParent))
+	let artCredit = winParent.add(makeCredit("art"))
 	artCredit.pos = vec2(secondColumnX, -70)
 
-	let shaderCredit = winParent.add(makeCredit("shader", winParent))
+	let shaderCredit = winParent.add(makeCredit("shader"))
 	shaderCredit.pos = vec2(secondColumnX, 14)
+	shaderCredit.unuse("hover")
 
-	let desktopCredit = winParent.add(makeCredit("desktop", winParent))
+	let desktopCredit = winParent.add(makeCredit("desktop"))
 	desktopCredit.pos = vec2(secondColumnX, 88)
 	// #endregion
 
@@ -108,7 +110,6 @@ export async function creditsWinContent(winParent:GameObj) {
 		scale(),
 		anchor("center"),
 		area(),
-		hoverController(),
 	])
 
 	let creditsHeart = winParent.add([
@@ -118,7 +119,9 @@ export async function creditsWinContent(winParent:GameObj) {
 		anchor("center"),
 	])
 
+	// ngUser exists, is logged in
 	if (ngUser != null) {
+		playerCredit.use(hoverController())
 		playerCredit.onClick(() => {
 			openURL(`https://${ngUser.name}.newgrounds.com`)
 			playSfx("clickButton", { detune: rand(30, 70) })
