@@ -24,6 +24,9 @@ dist-ssr
 *.sw?
 .env
 
+public/game.js
+public/game.js.map
+
 build.zip
 source.zip
 env.json
