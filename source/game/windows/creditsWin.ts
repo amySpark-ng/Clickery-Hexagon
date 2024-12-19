@@ -4,7 +4,7 @@ import { positionSetter } from "../plugins/positionSetter";
 import { playSfx } from "../../sound";
 import { hoverController } from "../../hoverManaging";
 import { WindowGameObj } from "./windows-api/windowManaging";
-import { getPosInGrid } from "../utils";
+import { capitalizeFirstLetter, getPosInGrid } from "../utils";
 
 const defFontSize = 36
 
@@ -15,10 +15,6 @@ const allCredits = {
 	"design": "https://lajbel.newgrounds.com",
 	"desktop": "https://EliCardoso.newgrounds.com",
 	"shader": null,
-}
-
-function capitalizeFirstLetter(string:string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function openURL(url:string) {

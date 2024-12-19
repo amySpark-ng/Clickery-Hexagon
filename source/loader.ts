@@ -130,9 +130,18 @@ function loadAllSprites() {
 			grab: 2,
 			wait: 3,
 			check: 4,
-		},
+		}, 
 	});
-	
+
+	loadSpriteAtlas("sprites/cursors.png", {
+		"sandclock": {
+			x: 144,
+			y: 0,
+			width: 48,
+			height: 48,
+		}
+	})
+
 	loadSprite("saveIcon", "sprites/saveIcon.png")
 	loadSprite("welcomeBackIcon", "sprites/welcomeBackIcon.png")
 
@@ -556,8 +565,47 @@ function loadAllSprites() {
 	
 	loadSprite("leaderboardsWin", "sprites/windows/leaderboardsWin/leaderboardsWin.png")
 	loadSprite("leaderboardsHeader", "sprites/windows/leaderboardsWin/leaderboardsHeader.png")
-	loadSprite("leaderboardsTheLine", "sprites/windows/leaderboardsWin/leaderboardsTheLine.png")
-	
+	loadSpriteAtlas("sprites/windows/leaderboardsWin/leaderboardsScoreButtons.png", {
+		"leaderboardsScoreAllTime": {
+			"x": 0,
+			"y": 0,
+			"width": 123,
+			"height": 40,
+		},
+		"leaderboardsTotalTime": {
+			"x": 0,
+			"y": 44,
+			"width": 123,
+			"height": 40,
+		},
+		"leaderboardsTotalMana": {
+			"x": 0,
+			"y": 88,
+			"width": 124,
+			"height": 40,
+		},
+	})
+	loadSpriteAtlas("sprites/windows/leaderboardsWin/leaderboardsTimeButtons.png", {
+		"leaderboardsW": {
+			"x": 0,
+			"y": 0,
+			"width": 40,
+			"height": 40,
+		},
+		"leaderboardsM": {
+			"x": 40,
+			"y": 0,
+			"width": 40,
+			"height": 40,
+		},
+		"leaderboardsA": {
+			"x": 82,
+			"y": 0,
+			"width": 40,
+			"height": 40,
+		},
+	})
+
 	loadSprite("creditsWin", "sprites/windows/creditsWin/creditsWin.png")
 	loadSprite("creditsHeart", "sprites/windows/creditsWin/creditsHeart.png")
 	

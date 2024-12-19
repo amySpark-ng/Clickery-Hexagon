@@ -7,7 +7,7 @@
 	- Made the credit window prettier
 
 	### Features:
-	- Tabs to leaderboard window (todo)
+	- Tabs to leaderboard window
 
 ## 1.1.1
 - Game didn't set log in on focus scene

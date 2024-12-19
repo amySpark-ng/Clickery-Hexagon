@@ -225,6 +225,10 @@ export function removeNumbersOfString(str:string) {
 	return str.replace(/\d+/g, '');
 }
 
+export function capitalizeFirstLetter(string:string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export function getRandomElementDifferentFrom(arr, element) {
     // Step 1: Filter the array to exclude the specified element
     const filteredArray = arr.filter(item => item !== element);
