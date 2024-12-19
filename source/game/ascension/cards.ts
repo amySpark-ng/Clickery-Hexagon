@@ -7,6 +7,7 @@ import { playSfx } from "../../sound"
 import { windowKey } from "../windows/windows-api/windowManaging"
 import { isWindowUnlocked, unlockWindow } from "../unlockables/windowUnlocks"
 import { talk } from "./dialogues"
+import { hoverController } from "../../hoverManaging"
 
 let cardsInfo = {
 	"clickersCard": { 
@@ -129,7 +130,7 @@ function flipCard(card:GameObj, newType:card | string) {
 
 function addCard(cardType:string | card, position: Vec2) {
 	
-	let card = add([
+	const card = add([
 		// starts at backcard
 		sprite("backcard"),
 		pos(position),
@@ -138,62 +139,14 @@ function addCard(cardType:string | card, position: Vec2) {
 		z(6),
 		scale(),
 		anchor("center"),
-		area({ scale: vec2(0) }),
+		area(),
 		"card",
 		{
 			indexInDeck: 0, // 1 - 4 / 1 being leftmost
 			price: 1,
 			type: cardType,
-			typeIdx: cardsInfo[cardType].idx,
+			typeIdx: cardsInfo[cardType].idx as number,
 			additive: getAdditive(cardType as card),
-			update() {
-				// sets price
-				if (!(this.type == "hexColorCard" || this.type == "bgColorCard")) {
-					let objectAmount = getVariable(GameState, cardsInfo[this.type].gamestateInfo.objectAmount)
-
-					this.price = getPrice({
-						basePrice: cardsInfo[this.type].basePrice,
-						percentageIncrease: cardsInfo[this.type].percentageIncrease,
-						objectAmount: objectAmount
-					})
-				}
-
-				else {
-					this.price = cardsInfo[this.type].unlockPrice
-				}
-			},
-
-			startHover() {
-				tween(this.pos.y, cardYPositions.hovered, 0.25, (p) => this.pos.y = p, easings.easeOutQuart)
-				tween(this.angle, choose([-1.5, 1.5]), 0.25, (p) => this.angle = p, easings.easeOutQuart)
-	
-				let message:string;
-
-				if (this.type == "critsCard" && GameState.ascension.critPowersBought == 0) {
-					message = "When you click, you will have a random chance of getting more score per click"
-				}
-
-				else {
-					// it adds the % on the info message
-					message = cardsInfo[this.type].info.replace("[number]", this.additive)
-					if (!(this.type == "hexColorCard" || this.type == "bgColorCard")) {
-						let currentGot = getVariable(GameState, cardsInfo[this.type].gamestateInfo.key)
-						currentGot = parseFloat(currentGot.toFixed(1))
-						
-						if (this.type == "powerupsCard" || this.type == "critsCard") {
-							message += ` (Current power: ${currentGot}x)`
-						}
-						
-						else {
-							message += ` (You have: ${currentGot}%)`
-						}
-					}
-				}
-
-				talk("card", message)
-				playSfx("onecard", { detune: rand(-75, 75) * this.indexInDeck })
-			},
-
 			buy() {
 				tween(0.75, 1, 0.15, (p) => this.scale.y = p, easings.easeOutQuart)
 			
@@ -254,9 +207,53 @@ function addCard(cardType:string | card, position: Vec2) {
 		}
 	])
 
+	card.onUpdate(() => {
+		// sets price
+		if (!(card.type == "hexColorCard" || card.type == "bgColorCard")) {
+			let objectAmount = getVariable(GameState, cardsInfo[card.type].gamestateInfo.objectAmount)
+
+			card.price = getPrice({
+				basePrice: cardsInfo[card.type].basePrice,
+				percentageIncrease: cardsInfo[card.type].percentageIncrease,
+				objectAmount: objectAmount
+			})
+		}
+
+		else {
+			card.price = cardsInfo[card.type].unlockPrice
+		}
+	})
+
 	card.on("dealingOver", () => {
 		card.onHover(() => {
-			card.startHover()
+			tween(card.pos.y, cardYPositions.hovered, 0.25, (p) => card.pos.y = p, easings.easeOutQuart)
+			tween(card.angle, choose([-1.5, 1.5]), 0.25, (p) => card.angle = p, easings.easeOutQuart)
+
+			let message:string = "";
+
+			if (card.type == "critsCard" && GameState.ascension.critPowersBought == 0) {
+				message = "When you click, you will have a random chance of getting more score per click"
+			}
+
+			else {
+				// it adds the % on the info message
+				message = cardsInfo[card.type].info.replace("[number]", card.additive)
+				if (!(card.type == "hexColorCard" || card.type == "bgColorCard")) {
+					let currentGot = getVariable(GameState, cardsInfo[card.type].gamestateInfo.key)
+					currentGot = parseFloat(currentGot.toFixed(1))
+					
+					if (card.type == "powerupsCard" || card.type == "critsCard") {
+						message += ` (Current power: ${currentGot}x)`
+					}
+					
+					else {
+						message += ` (You have: ${currentGot}%)`
+					}
+				}
+			}
+
+			talk("card", message)
+			playSfx("onecard", { detune: rand(-75, 75) * card.indexInDeck })
 		})
 
 		card.onHoverEnd(() => {

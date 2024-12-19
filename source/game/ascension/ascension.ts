@@ -9,11 +9,11 @@ import { addMage } from "./mage";
 import { isAchievementUnlocked, unlockAchievement } from "../unlockables/achievements";
 import { dialogue, getDialogue, getRandomDialogue, humKey, mageDialogues, startDialoguing, talk, yummersKey } from "./dialogues";
 import { spawnCards } from "./cards";
-import { positionSetter } from "../plugins/positionSetter";
 import { playSfx } from "../../sound";
 import { addTooltip, mouse, tooltipInfo } from "../additives";
 import { GameObj, KEventController } from "kaplay";
 import { formatNumberSimple } from "../utils";
+import { hoverController } from "../../hoverManaging";
 
 export let ascension = {
 	ascending: false,
@@ -31,6 +31,7 @@ export function addLeaveButton() {
 		layer("ascension"),
 		opacity(),
 		z(1),
+		hoverController(),
 		"leaveButton"
 	])
 
@@ -46,7 +47,6 @@ export function leaveButtonSpawnAnim(leaveButton:GameObj) {
 
 		leaveButton.onHover(() => {
 			tween(leaveButton.scale, vec2(1.1), 0.25, (p) => leaveButton.scale = p, easings.easeOutExpo)
-			mouse.play("point")
 
 			tooltip = addTooltip(leaveButton, {
 				text: "When clicked\nwill end the ascension",
@@ -59,8 +59,6 @@ export function leaveButtonSpawnAnim(leaveButton:GameObj) {
 
 		leaveButton.onHoverEnd(() => {
 			tween(leaveButton.scale, vec2(1), 0.25, (p) => leaveButton.scale = p, easings.easeOutExpo)
-			mouse.play("cursor")
-
 			tooltip.end()
 		})
 

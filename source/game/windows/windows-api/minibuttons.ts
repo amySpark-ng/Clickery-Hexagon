@@ -154,15 +154,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 				})
 			},
 
-			click() {
-				// click function
-				manageWindow(currentMinibutton.windowKey)
-				bop(currentMinibutton)
-
-				// unlocking stuff
-				destroyExclamation(currentMinibutton)
-			},
-
 			pickFromTaskbar() {
 				this.pick()
 
@@ -221,6 +212,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 			},
 		}
 	]);
+
 	// having this be of type any caused the typing of the object to not work, that's weird right?
 	currentMinibutton.windowInfo = infoForWindows[opts.windowKey]
 
@@ -263,13 +255,24 @@ export function addMinibutton(opts:minibuttonOpt) {
 	else currentMinibutton.play("default")
 
 	// animate them
-	currentMinibutton.area.scale = vec2(1)
 	currentMinibutton.opacity = 0
     tween(currentMinibutton.opacity, 1, 0.32, (p) => currentMinibutton.opacity = p, easings.easeOutQuad)
-	
+
+	const duration = 0.32
+	let elapsedTime = 0
+	let lastPos = currentMinibutton.pos
+
 	currentMinibutton.onUpdate(() => {
 		if (currentMinibutton.dragging) return;
-		currentMinibutton.pos = lerp(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.5)
+		if (elapsedTime < duration) {
+			elapsedTime += dt()
+			const t = Math.min(elapsedTime / duration, 1)
+			currentMinibutton.pos = lerp(lastPos, currentMinibutton.destinedPosition, easings.easeOutBack(t))
+		}
+		
+		else {
+			currentMinibutton.pos = lerp(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.32)
+		}
 	})
 	
 	// currentMinibutton is the one being swapped to met the curDragging wish
@@ -313,7 +316,12 @@ export function addMinibutton(opts:minibuttonOpt) {
 	})
 
 	currentMinibutton.onPress(() => {
-		currentMinibutton.click()
+		// click function
+		manageWindow(currentMinibutton.windowKey)
+		bop(currentMinibutton)
+
+		// unlocking stuff
+		destroyExclamation(currentMinibutton)
 	})
 	
 	if (currentMinibutton.windowKey != "extraWin") {

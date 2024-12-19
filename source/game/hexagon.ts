@@ -412,6 +412,9 @@ function createHexagon() {
 	let scaleHoverIncrease = vec2(1.1)
 
 	hexagon.onUpdate(() => {
+		if (hexagon.interactable) hexagon.customHoverScale = vec2(1)
+		else hexagon.customHoverScale = vec2(0)
+		
 		// spinning stuff
 		if (hexagon.angle >= 360) {
 			hexagon.angle = 0

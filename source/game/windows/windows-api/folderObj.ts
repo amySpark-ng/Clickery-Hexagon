@@ -120,7 +120,7 @@ export function addFolderObj() {
 	])
 
 	theFolderObj.onUpdate(() => {
-		theFolderObj.flipX = folded ? true : false
+		theFolderObj.flipX = folded
 		
 		if (curDraggin?.is("gridMiniButton") || curDraggin?.is("minibutton")) return
 		if (!movingMinibuttons) {

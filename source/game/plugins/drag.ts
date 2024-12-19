@@ -1,9 +1,9 @@
 // # Found in kaplay examples
 
-import { Comp, KEvent, KEventController } from "kaplay"
+import { AreaComp, Comp, GameObj, KEvent, KEventController, PosComp } from "kaplay"
 
 // Keep track of the current draggin item
-export let curDraggin = null
+export let curDraggin:GameObj<any> = null
 
 export function setCurDraggin(value = null) {
 	curDraggin = value

@@ -36,8 +36,7 @@ export function postEverything() {
  */
 export async function onLogIn(session: Session) {
 	ngUser = session.user
-	console.log("ngUser: ")
-	console.log(ngUser)
+	console.log("ngUser: ", ngUser)
 	console.log("NG: Enabled")
 	ngEnabled = true
 
