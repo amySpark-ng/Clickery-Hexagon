@@ -34,6 +34,7 @@ export function openWindowButton() : OpenWindowButtonComp {
 			if (this.isHovering()) {
 				// if is holding down mouse
 				if (isMouseDown("left")) {
+					// if (!wasHoveringWhenClick) return;
 					if (!isHeld) {
 						// if the button is not held, it starts counting time 
 						timeCounter += dt()

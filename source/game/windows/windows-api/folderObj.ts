@@ -4,9 +4,8 @@ import { playSfx } from "../../../sound";
 import { ascension } from "../../ascension/ascension";
 import { blendColors, bop, sortedTaskbar } from "../../utils";
 import { setTimeSinceSkip, timeSinceSkip } from "../musicWindow";
-import { addMinibutton, getMinibuttonPos, miniButtonXarea, miniButtonYarea, moveButtonToPos,  } from "./minibuttons";
+import { addMinibutton, getMinibuttonPos, MinibuttonGameObj, miniButtonXarea } from "./minibuttons";
 import { manageWindow, allObjWindows, windowKey } from "./windowManaging";
-import { GameObj } from "kaplay";
 import { allPowerupsInfo } from "../../powerups";
 import { hoverController } from "../../../hoverManaging";
 
@@ -14,7 +13,11 @@ export let folderObj:ReturnType<typeof addFolderObj>;
 export let folded = true;
 let timeSinceFold = 0;
 
-let movingMinibuttons:boolean;
+function getMinibuttons() {
+	return get("minibutton") as MinibuttonGameObj[]
+}
+
+let movingMinibuttons:boolean = false;
 /**
  * Adds the folder obj which contains manager for some things like:
  * - window hovering
@@ -31,6 +34,7 @@ export function addFolderObj() {
 	allPowerupsInfo.isHoveringAPowerup = false;
 
 	movingMinibuttons = false;
+	let foldWaiter = wait(0, () => {})
 
 	let theFolderObj = add([
 		sprite("folderObj"),
@@ -48,6 +52,7 @@ export function addFolderObj() {
 			interactable: true, 
 			unfold() {
 				folded = false
+				this.flipX = false
 				timeSinceFold = 0
 				playSfx("fold")
 
@@ -56,7 +61,7 @@ export function addFolderObj() {
 				// if there's no minibutton
 				if (get("minibutton").length == 0) {
 					GameState.taskbar.forEach((key, taskbarIndex) => {
-						let newminibutton = addMinibutton({
+						addMinibutton({
 							windowKey: key as windowKey,
 							taskbarIndex: taskbarIndex,
 							initialPosition: theFolderObj.pos,
@@ -64,7 +69,16 @@ export function addFolderObj() {
 					});
 					
 					movingMinibuttons = true
-					wait(0.32, () => movingMinibuttons = false)
+					foldWaiter?.cancel()
+					foldWaiter = wait(0.32, () => movingMinibuttons = false)
+				}
+
+				// there are already minibutons, move them again to their places
+				else {
+					getMinibuttons().forEach((minibutton:MinibuttonGameObj) => {
+						minibutton.destinedPosition = getMinibuttonPos(minibutton.taskbarIndex)
+						minibutton.destinedOpacity = 1
+					});
 				}
 
 				this.trigger("unfold")
@@ -72,16 +86,19 @@ export function addFolderObj() {
 			
 			fold() {
 				folded = true
-				
+				this.flipX = true
+
 				// return them to folderObj pos
 				movingMinibuttons = true
-				get("minibutton").forEach(minibutton => {
-					tween(minibutton.opacity, 0, 0.32, (p) => minibutton.opacity = p, easings.easeOutQuint)
-					tween(minibutton.pos, theFolderObj.pos, 0.32, (p) => minibutton.pos = p, easings.easeOutQuint).then(() => {
-						destroy(minibutton)
-						movingMinibuttons = false
-					})
+				getMinibuttons().forEach((minibutton:MinibuttonGameObj) => {
+					minibutton.destinedPosition = vec2(width() - 40, height() - 40)
+					minibutton.destinedOpacity = 0
 				});
+				
+				// foldWaiter?.cancel()
+				foldWaiter = wait(0.64, () => {
+					movingMinibuttons = false
+				})
 
 				playSfx("fold", { detune: -150 })
 				this.trigger("fold")
@@ -120,14 +137,12 @@ export function addFolderObj() {
 	])
 
 	theFolderObj.onUpdate(() => {
-		theFolderObj.flipX = folded
-		
 		if (curDraggin?.is("gridMiniButton") || curDraggin?.is("minibutton")) return
 		if (!movingMinibuttons) {
 			if (theFolderObj.interactable == true && isKeyPressed("space")) {
 				theFolderObj.manageFold()
 				theFolderObj.deleteSlots()
-				// bop(theFolderObj)
+				bop(theFolderObj)
 			}
 		}
 
@@ -137,7 +152,8 @@ export function addFolderObj() {
 
 	theFolderObj.onClick(() => {
 		folderObj.manageFold()
-		// bop(folderObj)
+		theFolderObj.deleteSlots()
+		bop(folderObj)
 	})
 
 	// this can't be attached to the buttons because you won't be able to call the event if the buttons don't exist
@@ -199,14 +215,14 @@ export function addFolderObj() {
 	})
 
 	// manages behaviour related to the closeest minibutton
-	onUpdate("closestMinibuttonToDrag", (minibutton) => {
+	onUpdate("closestMinibuttonToDrag", (minibutton:MinibuttonGameObj) => {
 		if (!curDraggin?.is("gridMiniButton")) return
 		if (curDraggin?.screenPos().dist(minibutton.screenPos()) > 120) return
 		let distanceToCurDragging = curDraggin?.screenPos().dist(minibutton.screenPos())
 
 		minibutton.nervousSpinSpeed = 14
 		let blackness = map(distanceToCurDragging, 20, 120, 1, 0.25)
-		minibutton.opacity = map(distanceToCurDragging, 20, 120, 0.5, 1)
+		minibutton.destinedOpacity = map(distanceToCurDragging, 20, 120, 0.5, 1)
 		minibutton.scale.x = map(distanceToCurDragging, 20, 120, 0.8, 1)
 		minibutton.scale.y = map(distanceToCurDragging, 20, 120, 0.8, 1)
 		minibutton.scale.y = map(distanceToCurDragging, 20, 120, 0.8, 1)

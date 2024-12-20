@@ -19,15 +19,13 @@ type minibuttonOpt = {
 }
 
 export function getMinibuttonPos(taskbarIndex:number) {
+	if (taskbarIndex == 4) return vec2(width() - 40, height() - 40 - buttonSpacing)
 	return getPosInGrid(folderObj.pos, 0, -taskbarIndex - 1, vec2(75, 0))
 }
 
 export const miniButtonXarea = 0.8
 export const miniButtonYarea = 1.3
-
-export function moveButtonToPos(minibutton:GameObj, index:number) {
-	return tween(minibutton.pos.x, getMinibuttonPos(index).x, 0.32, (p) => minibutton.pos.x = p, easings.easeOutBack)
-}
+export type MinibuttonGameObj = ReturnType<typeof addMinibutton>
 
 export function addMinibutton(opts:minibuttonOpt) {
 	let quad:Quad; // don't touch this
@@ -41,9 +39,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 	let destinedPosition:Vec2;
 	if (opts.destPosition) destinedPosition = opts.destPosition
 	else {
-		let extraMb = infoForWindows[Object.keys(infoForWindows)[idxForInfo]].icon ? true : false
-		if (extraMb) destinedPosition = vec2(folderObj.pos.x, folderObj.pos.y - buttonSpacing)  
-		else destinedPosition = getMinibuttonPos(opts.taskbarIndex)
+		destinedPosition = getMinibuttonPos(opts.taskbarIndex)
 	}
 
 	/** The string for the sprite of the minibutton */
@@ -79,6 +75,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 			defaultScale: vec2(1),
 			dragHasSurpassed: false,
 			destinedPosition: destinedPosition,
+			destinedOpacity: 0,
 			extraMb: infoForWindows[opts.windowKey].icon == "extra" ? true : null,
 			shut: get("extraWin")[0] ? false : true,
 			update() {
@@ -132,14 +129,6 @@ export function addMinibutton(opts:minibuttonOpt) {
 							this.saturation = 0
 						}
 					}
-				}
-
-				if (this.extraMb) {
-					this.destinedPosition = vec2(folderObj.pos.x, folderObj.pos.y - buttonSpacing)
-				}
-
-				else {
-					this.destinedPosition.x = getMinibuttonPos(this.taskbarIndex).x
 				}
 			},
 
@@ -217,6 +206,15 @@ export function addMinibutton(opts:minibuttonOpt) {
 
 	let isHovering = false
 
+	if (currentMinibutton.extraMb) {
+		currentMinibutton.destinedPosition = vec2(folderObj.pos.x, folderObj.pos.y - buttonSpacing)
+	}
+
+	else {
+		currentMinibutton.destinedPosition.x = getMinibuttonPos(currentMinibutton.taskbarIndex).x
+		currentMinibutton.destinedPosition.y = folderObj.pos.y
+	}
+
 	currentMinibutton.onUpdate(() => {
 		isHovering = currentMinibutton.isHovering() || currentMinibutton.dragging
 		
@@ -254,14 +252,17 @@ export function addMinibutton(opts:minibuttonOpt) {
 	else currentMinibutton.play("default")
 
 	// animate them
-	currentMinibutton.opacity = 0
-    tween(currentMinibutton.opacity, 1, 0.32, (p) => currentMinibutton.opacity = p, easings.easeOutQuad)
+	currentMinibutton.destinedOpacity = 1
 
 	const duration = 0.32
 	let elapsedTime = 0
 	let lastPos = currentMinibutton.pos
 
 	currentMinibutton.onUpdate(() => {
+		currentMinibutton.opacity = lerp(currentMinibutton.opacity, currentMinibutton.destinedOpacity, 0.32)
+		if (folded) currentMinibutton.customHoverScale = vec2(0)
+		else currentMinibutton.customHoverScale = vec2(1)
+		
 		if (currentMinibutton.dragging) return;
 		if (elapsedTime < duration) {
 			elapsedTime += dt()
@@ -273,7 +274,8 @@ export function addMinibutton(opts:minibuttonOpt) {
 			currentMinibutton.pos = lerp(currentMinibutton.pos, currentMinibutton.destinedPosition, 0.32)
 		}
 	})
-	
+
+
 	// currentMinibutton is the one being swapped to met the curDragging wish
 	currentMinibutton.on("dragHasSurpassed", (left) => {
 		currentMinibutton.dragHasSurpassed = true

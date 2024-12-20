@@ -122,10 +122,6 @@ export function addGridButton(windowKey:windowKey) {
 							element.opacity = 1
 							element.scale = vec2(1)
 						});
-
-						get("gridMiniButton", { recursive: true }).forEach(element => {
-							if (element.isHovering()) element.startHoverFunction()
-						})
 					}
 
 					const goToTaskbar = function() {
@@ -141,7 +137,7 @@ export function addGridButton(windowKey:windowKey) {
 						GameState.taskbar[closestMinibutton.taskbarIndex] = thisThing.windowKey
 						
 						// destroy closestminibutton and grid minibutton
-						tween(closestMinibutton.opacity, 0, 0.32, (p) => closestMinibutton.opacity = p, easings.easeOutQuint)
+						closestMinibutton.destinedOpacity = 0
 						tween(closestMinibutton.scale, vec2(0), 0.32, (p) => closestMinibutton.scale = p, easings.easeOutQuint).onEnd(() => {
 							destroy(closestMinibutton)
 						})

@@ -203,6 +203,7 @@ export function startAscending() {
 export function endAscension() {
 	GameState.stats.timesAscended++
 	folderObj.interactable = true
+	hexagon.interactable = true
 	ROOT.trigger("endAscension")
 	allPowerupsInfo.canSpawnPowerups = true
 	ascension.ascending = false

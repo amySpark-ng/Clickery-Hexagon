@@ -3,7 +3,7 @@
 ## 1.2.1
 - Changed the image on devkyRD credit
 - Fixed a bug on minibuttons opening after putting them on taskbar
-- Fixed weird behaviour of dropleft flipping when there are not buttons (TODO)
+- Made folding and unfolding minibuttons much more smooth
 - Changed the system of saves (hopefully doesn't break anything)
 - Added a new cool toast for changelog (you're seeing it right now)
 

@@ -183,7 +183,7 @@ function addCard(cardType:string | card, position: Vec2) {
 
 					// get new additive
 					this.additive = getAdditive(this.type as card)
-					this.startHover() // talk
+					this.trigger("startHover") // talk , don't do this at home, code from kaplay
 				}
 
 				function subMana(amount:number) {
@@ -193,6 +193,37 @@ function addCard(cardType:string | card, position: Vec2) {
 				subMana(this.price)
 				playSfx("kaching", { detune: rand(-50, 50) })
 				if (ascension.canLeave == false) {ascension.canLeave = true; ROOT.trigger("canLeaveAscension")}
+			},
+
+			startHover() {
+				tween(this.pos.y, cardYPositions.hovered, 0.25, (p) => this.pos.y = p, easings.easeOutQuart)
+				tween(this.angle, choose([-1.5, 1.5]), 0.25, (p) => this.angle = p, easings.easeOutQuart)
+	
+				let message:string = "";
+	
+				if (this.type == "critsCard" && GameState.ascension.critPowersBought == 0) {
+					message = "When you click, you will have a random chance of getting more score per click"
+				}
+	
+				else {
+					// it adds the % on the info message
+					message = cardsInfo[this.type].info.replace("[number]", this.additive)
+					if (!(this.type == "hexColorCard" || this.type == "bgColorCard")) {
+						let currentGot = getVariable(GameState, cardsInfo[this.type].gamestateInfo.key)
+						currentGot = parseFloat(currentGot.toFixed(1))
+						
+						if (this.type == "powerupsCard" || this.type == "critsCard") {
+							message += ` (Current power: ${currentGot}x)`
+						}
+						
+						else {
+							message += ` (You have: ${currentGot}%)`
+						}
+					}
+				}
+	
+				talk("card", message)
+				playSfx("onecard", { detune: rand(-75, 75) * this.indexInDeck })
 			},
 
 			drawInspect() {
@@ -226,34 +257,7 @@ function addCard(cardType:string | card, position: Vec2) {
 
 	card.on("dealingOver", () => {
 		card.onHover(() => {
-			tween(card.pos.y, cardYPositions.hovered, 0.25, (p) => card.pos.y = p, easings.easeOutQuart)
-			tween(card.angle, choose([-1.5, 1.5]), 0.25, (p) => card.angle = p, easings.easeOutQuart)
-
-			let message:string = "";
-
-			if (card.type == "critsCard" && GameState.ascension.critPowersBought == 0) {
-				message = "When you click, you will have a random chance of getting more score per click"
-			}
-
-			else {
-				// it adds the % on the info message
-				message = cardsInfo[card.type].info.replace("[number]", card.additive)
-				if (!(card.type == "hexColorCard" || card.type == "bgColorCard")) {
-					let currentGot = getVariable(GameState, cardsInfo[card.type].gamestateInfo.key)
-					currentGot = parseFloat(currentGot.toFixed(1))
-					
-					if (card.type == "powerupsCard" || card.type == "critsCard") {
-						message += ` (Current power: ${currentGot}x)`
-					}
-					
-					else {
-						message += ` (You have: ${currentGot}%)`
-					}
-				}
-			}
-
-			talk("card", message)
-			playSfx("onecard", { detune: rand(-75, 75) * card.indexInDeck })
+			card.startHover()
 		})
 
 		card.onHoverEnd(() => {
