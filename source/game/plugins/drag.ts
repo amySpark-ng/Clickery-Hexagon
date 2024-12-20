@@ -12,6 +12,7 @@ export function setCurDraggin(value = null) {
 export interface DragComp extends Comp {
 	dragging: boolean
 	pick(): void
+	drop(): void,
 	onDrag(action: () => void): KEventController
 	onDragUpdate(action: () => void): KEventController
 	onDragEnd(action: () => void): KEventController
@@ -53,6 +54,11 @@ export function drag(onlyX:boolean = false, onlyY:boolean = false) : DragComp {
 			else {
 				this.dragging = false
 			}
+		},
+		drop() {
+			this.trigger("dragEnd")
+			this.dragging = false
+			curDraggin = null
 		},
 		onDrag(action:() => void) : KEventController {
 			return this.on("drag", action) as KEventController

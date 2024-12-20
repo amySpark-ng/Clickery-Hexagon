@@ -167,8 +167,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 			},
 
 			releaseDrop() {
-				curDraggin.trigger("dragEnd")
-				setCurDraggin(null)
+				curDraggin.drop()
 				this.layer = "ui"
 				this.z = folderObj.z - 1
 

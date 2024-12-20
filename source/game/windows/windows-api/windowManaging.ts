@@ -168,8 +168,7 @@ export function openWindow(windowKey:windowKey) {
 
 			releaseDrop() {
 				if (curDraggin && curDraggin == this) {
-					curDraggin.trigger("dragEnd")
-					setCurDraggin(null)
+					curDraggin.drop()
 				}
 			},
 

@@ -169,7 +169,7 @@ export function addFolderObj() {
 				if (folded) theFolderObj.unfold();
 				
 				let minibutton = get(windowKey)?.filter(obj => obj.is("minibutton"))[0]
-				if (minibutton) minibutton.click()
+				if (minibutton) minibutton.trigger("press")
 				else manageWindow(windowKey)
 			}
 		}

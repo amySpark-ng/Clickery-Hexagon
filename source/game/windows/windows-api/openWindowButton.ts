@@ -1,5 +1,5 @@
-import { Comp, KEvent, KEventController, Vec2 } from "kaplay";
-import { curDraggin } from "../../plugins/drag"
+import { Comp, KEventController } from "kaplay";
+import { curDraggin } from "../../plugins/drag";
 
 const timeForHold = 0.18
 
@@ -13,49 +13,54 @@ export interface OpenWindowButtonComp extends Comp {
 }
 
 export function openWindowButton() : OpenWindowButtonComp {
+	let timeCounter = 0
+	let isHeld = false
+	let timeSinceAdd = 0
+
 	return {
 		id: "windowButton",
 		require: ["rotate", "drag", "area"],
 
-		add() {
-			let waitingHold = wait(0, () => {})
-			this.onClick(() => {
-				if (!this.isHovering()) return
-			
-				waitingHold.cancel()
-				waitingHold = wait(timeForHold, () => {
-					if (!this.isHovering()) return
-					if (curDraggin) {
-						return
-					}
-		
-					// hold function
-					this.trigger("hold")
-				})
-			})
-
-			this.onMouseRelease("left", () => {
-				if (this.dragging) {
-					this.trigger("holdRelease")
-				}
-
-				// was not being dragged
-				else {
-					waitingHold?.cancel()
-					if (!this.isHovering()) return
-					if (curDraggin) return
-					
-					// click function
-					this.trigger("press")
-				}
-			})
-		},
-
 		update() {
-			if (this.dragging) {
+			if (timeSinceAdd < 0.1) timeSinceAdd += dt()
+			
+			if (isHeld) {
 				// tilting towards direction
 				if (isMouseMoved()) this.angle = lerp(this.angle, mouseDeltaPos().x, 0.25)
 				else this.angle = lerp(this.angle, 0, 0.25)
+			}
+
+			// if is hovering
+			if (this.isHovering()) {
+				// if is holding down mouse
+				if (isMouseDown("left")) {
+					if (!isHeld) {
+						// if the button is not held, it starts counting time 
+						timeCounter += dt()
+						// when it reaches the time it will be held and triggered the held event
+						if (timeCounter >= timeForHold) {
+							isHeld = true
+							this.trigger("hold")
+						}
+					}
+				}
+
+				else if (isMouseReleased("left")) {
+					timeCounter = 0
+
+					// for the life of me i could not figure out a way to fix this fucking shit
+					// was making me genuinely very mad
+					if (timeSinceAdd < 0.1) return;
+					
+					if (isHeld == true) {
+						isHeld = false
+						this.trigger("holdRelease")
+					}
+					
+					else if (isHeld == false) {
+						this.trigger("press")
+					}
+				}
 			}
 		},
 

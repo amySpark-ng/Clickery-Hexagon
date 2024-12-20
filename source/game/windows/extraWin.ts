@@ -102,8 +102,7 @@ export function addGridButton(windowKey:windowKey) {
 
 			releaseDrop(defaultShadow = true) {
 				if (curDraggin == this) {
-					curDraggin.trigger("dragEnd")
-					setCurDraggin(null)
+					curDraggin.drop()
 					gridButton.layer = "windows"
 
 					// wtf???
@@ -238,14 +237,14 @@ export function addGridButton(windowKey:windowKey) {
 	return gridButton
 }
 
-let amountOfElementsX = 5
-let amountOfElementsY = 2
+const amountOfElementsX = 5
+const amountOfElementsY = 2
 export function extraWinContent(winParent:WindowGameObj) {
-	// makes the grid
+	// // makes the grid
 	gridContainer = winParent.add([pos(-164, -32)])
 
 	function getExtraBtnPos(index:number) {
-		let initialPos = vec2(18, 15)
+		const initialPos = vec2(18, 15)
 		let pos = vec2()
 
 		let column = 0;
@@ -314,15 +313,15 @@ export function extraWinContent(winParent:WindowGameObj) {
 		if (!hoveredGridButton || hoveredGridButton.dragging) return;
 		cursorPos = lerp(cursorPos, hoveredGridButton.pos, 0.7)
 
-		drawRect({
-			pos: cursorPos,
-			width: extraMinibutton.width,
-			height: extraMinibutton.height,
-			color: WHITE,
-			anchor: "center",
-			opacity: 0.25,
-			radius: 8,
-		})
+		// drawRect({
+		// 	pos: cursorPos,
+		// 	width: extraMinibutton.width,
+		// 	height: extraMinibutton.height,
+		// 	color: WHITE,
+		// 	anchor: "center",
+		// 	opacity: 0.25,
+		// 	radius: 8,
+		// })
 	})
 
 	winParent.on("close", () => {
