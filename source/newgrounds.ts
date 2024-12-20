@@ -1,6 +1,6 @@
 import ng, { User } from "newgrounds.js";
 import * as env from "./env.json"
-import { _GameState, GameState } from "./gamestate";
+import { _GameState, deepMergeSaves, GameState } from "./gamestate";
 import { positionSetter } from "./game/plugins/positionSetter";
 import { bop } from "./game/utils";
 import { gameBg } from "./game/additives";
@@ -41,8 +41,11 @@ export async function onLogIn(session: Session) {
 	ngEnabled = true
 
 	// This is here because it would run after the save is loaded
-	const data = JSON.parse(await ng.getCloudData(1)) as _GameState
+	let data = JSON.parse(await ng.getCloudData(1)) as _GameState
 	if (data) {
+		// merge data to new save cooler
+		data = deepMergeSaves(data, new _GameState()) as _GameState
+		
 		if (GameState.scoreAllTime > data.scoreAllTime) {
 			ng.setCloudData(1, JSON.stringify(GameState))
 			console.log("Current data is better than cloud, overwriting...")

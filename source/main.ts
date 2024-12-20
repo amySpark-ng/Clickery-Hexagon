@@ -17,9 +17,9 @@ runInTauri(() => appWindow = getCurrentWebviewWindow())
 
 console.log(`appWindow: ` + appWindow)
 
-export let DEBUG = false
+export let DEBUG = true
 export let enableNg = true
-const VERSION = "1.2.0"
+export const GAME_VERSION = "1.2.1"
 
 let kaplayOpts = {
 	width: 1024,
@@ -44,7 +44,7 @@ runInTauri(() => {
 })
 
 export const k = kaplay(kaplayOpts as KAPLAYOpt);
-console.log("Game's version: " + VERSION)
+console.log("Game's version: " + GAME_VERSION)
 
 export let ROOT = getTreeRoot()
 setBackground(BLACK)

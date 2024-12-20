@@ -1,5 +1,4 @@
 import { DEBUG } from "./main.js"
-import { introscene } from "./game/scenes/introScene.ts";
 import { gamescene } from "./game/gamescene.ts";
 import { focuscene } from "./game/scenes/focuscene.ts";
 import { ngScene } from "./game/scenes/ngScene.ts";
@@ -7,7 +6,7 @@ import { achievements } from "./game/unlockables/achievements.ts";
 import { getPosInGrid } from "./game/utils.ts";
 import { SpriteAtlasData } from "kaplay";
 
-export function drawSeriousLoadScreen(progress, op = 1) {
+export function drawSeriousLoadScreen(progress:number, op = 1) {
 	function drawHexagon(opts = {
 		pos: center(),
 		scale: vec2(1),
@@ -910,7 +909,6 @@ export function loadEverything() {
 
 	ngScene()
 	focuscene()
-	introscene()
 	gamescene()
 	//#endregion OTHER STUFF
 

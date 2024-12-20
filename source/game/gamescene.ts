@@ -5,7 +5,7 @@ import { coolSetFullscreen, debugFunctions, formatNumber, formatTime, randomPos,
 import { addToast, gameBg, mouse } from "./additives.ts"
 import { musicHandler, playMusic, playSfx, stopAllSounds } from "../sound.ts"
 import { songs } from "./windows/musicWindow.ts"
-import { appWindow, DEBUG, ROOT } from "../main.ts"
+import { appWindow, DEBUG, GAME_VERSION, ROOT } from "../main.ts"
 import { allPowerupsInfo, Powerup_NaturalSpawnManager, Powerup_RemovalTimeManager, spawnPowerup } from "./powerups.ts"
 import { checkForUnlockable, isAchievementUnlocked, unlockAchievement } from "./unlockables/achievements.ts"
 import { ascension } from "./ascension/ascension.ts"
@@ -284,7 +284,7 @@ export const gamescene = () => scene("gamescene", () => {
 	checkForUnlockable()
 	hoverManaging();
 
-	ROOT.on("gamestart", () => {
+	ROOT.on("gamestart", async () => {
 		runInTauri(() => appWindow.setTitle("Clickery Hexagon"))
 		
 		// wait 60 seconds
@@ -343,6 +343,42 @@ export const gamescene = () => scene("gamescene", () => {
 					}
 				})
 			})
+		}
+	
+		function saveVersionToNumber(str: string) {
+			let number = 0
+			str.split(".").forEach((n) => {
+				number += Number(n)
+			})
+			return number;
+		}
+
+		if (typeof GameState.saveVersion == "number") {
+			GameState.saveVersion = String(GameState.saveVersion)
+		}
+
+		// // changelog
+		if (saveVersionToNumber(GameState.saveVersion) < saveVersionToNumber(GAME_VERSION)) {
+			let changelogInfo = await (await fetch("https://raw.githubusercontent.com/amyspark-ng/clickery-hexagon/refs/heads/main/CHANGELOG.md")).text()
+			let data = ""
+			let startingIndex = 0
+			let endingIndex = 0
+
+			for (let i = 0; i < changelogInfo.split("\n").length; i++) {
+				const line = changelogInfo.split("\n")[i].trim()
+				if (line.startsWith("## ") && line.endsWith(`${GAME_VERSION}`)) {
+					startingIndex = i
+					// debug.log("found the starting line at " + i + " it says: " + line)
+				}
+				if (line.startsWith("## ") && !line.endsWith(`${GAME_VERSION}`)) {
+					endingIndex = i
+					// debug.log("found the ending line at " + i + " it says: " + line)
+					break;
+				}
+			}
+
+			data = changelogInfo.split("\n").splice(startingIndex, endingIndex - startingIndex).join("\n")
+			addToast({ icon: "welcomeBackIcon", title: "New update!", body: data, type: "welcome" })
 		}
 	})
 	

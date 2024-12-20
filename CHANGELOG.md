@@ -1,39 +1,47 @@
 # CLICKERY HEXAGON CHANGELOG
 
-## 1.2.0
-	### FIXES/CHANGES:
-	- Fixed bugs related to hovers and other stuff
-	- Fixed dropleft running away
-	- Made the credit window prettier
+## 1.2.1
+- Changed the image on devkyRD credit
+- Fixed a bug on minibuttons opening after putting them on taskbar (TODO)
+- Fixed weird behaviour of dropleft flipping when there are not buttons (TODO)
+- Changed the system of saves (hopefully doesn't break anything)
+- Added a new cool toast for changelog (you're seeing it right now)
 
-	### Features:
-	- Tabs to leaderboard window
+## 1.2.0
+FIXES/CHANGES:
+- Fixed bugs related to hovers and other stuff
+- Fixed dropleft running away
+- Made the credit window prettier
+- Added cloudsaves from newgrounds
+
+FEATURES:
+- Tabs to leaderboard window
 
 ## 1.1.1
 - Game didn't set log in on focus scene
 
 ## 1.1.0
 
-	### FEATURES:
-	- Added stat for game complete time
+FEATURES:
+- Added stat for game complete time
 
-	### FIXES/CHANGES:
-	- Removed position setters
-	- Modified formula for getting prices after ascending
-	- Hopefully made saves compatible with previous ones in case they don't have the properties
-	- Hopefully fix the issue with medals, newgrounds wasn't being enabled on newgrounds (ironically)
-	- Now at log in, for every medal you have in game but not on newgrounds, it will be unlocked every 5 seconds each
+FIXES/CHANGES:
+- Removed position setters
+- Modified formula for getting prices after ascending
+- Hopefully made saves compatible with previous ones in case they don't have the properties
+- Hopefully fix the issue with medals, newgrounds wasn't being enabled on newgrounds (ironically)
+- Now at log in, for every medal you have in game but not on newgrounds, it will be unlocked every 5 seconds each
 
-	- Changed critical particles
-	- Changed critical chance
-	- Goober devky has more chance of appearing
-	- Gnome is SLIGHTLY rarer
-	- Fixed formatting:
-		- On the ascendWin mana counter
-		- Mana per second on ascendWin
-		- Ascension substate mana counter
-		- Store element power text
-	- Fixed store element for powerups not showing the correct price after ascending
+- Changed critical particles
+- Changed critical chance
+- Goober devky has more chance of appearing
+- Gnome is SLIGHTLY rarer
+- Fixed formatting:
+	- On the ascendWin mana counter
+	- Mana per second on ascendWin
+	- Ascension substate mana counter
+	- Store element power text
+- Fixed store element for powerups not showing the correct price after ascending
 
 ## 1.0.1
 - Game didn't ping newgrounds so leaderboards wouldn't work and medals i think

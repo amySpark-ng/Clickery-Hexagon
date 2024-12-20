@@ -2,9 +2,34 @@ import ng from "newgrounds.js"
 import { clickVars } from "./game/hexagon"
 import { powerupTypes } from "./game/powerups"
 import { percentage, saveAnim } from "./game/utils"
-import { ROOT } from "./main"
+import { GAME_VERSION, ROOT } from "./main"
 import { ngEnabled, ngUser } from "./newgrounds"
 import { musicHandler, stopAllSounds } from "./sound"
+
+export function deepMergeSaves(oldSave:_GameState, newSave:_GameState) : _GameState {
+    const result:any = { ...oldSave }; // Start with a shallow copy of the old save
+
+    for (const key in newSave) {
+        if (newSave.hasOwnProperty(key)) {
+            if (
+                typeof newSave[key] === "object" &&
+                newSave[key] !== null &&
+                !Array.isArray(newSave[key])
+            ) {
+                // If it's an object, recursively merge
+                result[key] = deepMergeSaves(
+                    oldSave[key] || {}, // Use oldSave's value or empty object
+                    newSave[key]
+                );
+            } else if (!result.hasOwnProperty(key)) {
+                // Add new property from newSave only if it doesn't exist in oldSave
+                result[key] = newSave[key];
+            }
+        }
+    }
+
+    return result;
+}
 
 export class saveColor {
     r: number = 255;
@@ -91,20 +116,18 @@ export class _GameState {
 		setData("hexagon-save", this)
 		if (anim) saveAnim()
 		if (ngEnabled && ngUser) ng.setCloudData(1, JSON.stringify(this))
+		this.saveVersion = GAME_VERSION		
 	}
 
 	loadFromStorage() {
 		const newSave = new _GameState()
 		
 		let gottenData = getData("hexagon-save") as _GameState
-		
 		if (!gottenData) gottenData = newSave
-		
-		Object.keys(gottenData).forEach(function(k) {
-			if (!gottenData.hasOwnProperty(k)) gottenData[k] = newSave[k];
-		});
 
-		Object.assign(this, gottenData)
+		const coolSave = deepMergeSaves(gottenData, newSave)
+
+		Object.assign(this, coolSave)
 		return gottenData;
 	}
 
@@ -135,13 +158,8 @@ export class _GameState {
 		this.settings.music.muted = true
 	}
 
-	// 0.9 was in the last days before the release of the game
-	// 0.91 was has been gnomed, devky goobered
-	// 1.0 will be in the moment of release
-	/**
-	 *  Every time there's a change to the gamestate save this has to be changed
-	 */
-	saveVersion = 1
+	/** The version of the game at the time of the save */
+	saveVersion:string = GAME_VERSION
 }
 
 export let GameState = new _GameState()

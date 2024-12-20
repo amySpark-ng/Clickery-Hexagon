@@ -1,5 +1,5 @@
 import { Color, GameObj, ScaleComp, Vec2 } from "kaplay";
-import { GameState, saveColor, scoreManager } from "../gamestate";
+import { _GameState, GameState, saveColor, scoreManager } from "../gamestate";
 import { addToast, mouse } from "./additives";
 import { autoLoopTime, cam, triggerGnome } from "./gamescene";
 import { hexagon } from "./hexagon";
