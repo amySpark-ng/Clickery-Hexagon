@@ -76,7 +76,7 @@ export function drawSeriousLoadScreen(progress:number, op = 1) {
 	})
 }
 
-function drawDevkyLoadScreen(progress) {
+function drawDevkyLoadScreen(progress:number) {
 	drawRect({
 		width: width(),
 		height: height(),
@@ -901,7 +901,10 @@ function loadShaders() {
 
 // Sprite atlas were made with this awesome website
 // https://www.finalparsec.com/tools/sprite_sheet_maker
-export function loadEverything() {
+export async function loadEverything() {
+	// 20% of getting devky's funny loading screen 
+	if (chance(0.2)) onLoading((progress) => drawDevkyLoadScreen(progress))
+	else onLoading((progress) => drawSeriousLoadScreen(progress))
 
 	loadAllSprites()
 	loadAllSounds()
@@ -910,9 +913,4 @@ export function loadEverything() {
 	ngScene()
 	focuscene()
 	gamescene()
-	//#endregion OTHER STUFF
-
-	// 20% of getting devky's funny loading screen 
-	if (chance(0.2)) onLoading((progress) => drawDevkyLoadScreen(progress))
-	else onLoading((progress) => drawSeriousLoadScreen(progress))
 }

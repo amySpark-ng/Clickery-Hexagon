@@ -263,7 +263,7 @@ export function triggerGnome() {
 export let hexagonIntro:() => void;
 export let hasStartedGame:boolean;
 
-export const gamescene = () => scene("gamescene", () => {
+export const gamescene = () => scene("gamescene", async () => {
 	hasStartedGame = GameState.scoreAllTime > 1
 	ascension.ascending = false
 	allPowerupsInfo.isHoveringAPowerup = false

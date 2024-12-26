@@ -1,5 +1,6 @@
 import { Comp, KEventController } from "kaplay";
 import { curDraggin } from "../../plugins/drag";
+import { folderObj } from "./folderObj";
 
 const timeForHold = 0.18
 
@@ -20,6 +21,12 @@ export function openWindowButton() : OpenWindowButtonComp {
 	return {
 		id: "windowButton",
 		require: ["rotate", "drag", "area"],
+
+		add() {
+			folderObj.on("fold", () => {
+				isHeld = false
+			})
+		},
 
 		update() {
 			if (timeSinceAdd < 0.1) timeSinceAdd += dt()

@@ -1,5 +1,8 @@
 # CLICKERY HEXAGON CHANGELOG
 
+## 1.2.2
+- Minibuttons weren't working properly in the taskbar
+
 ## 1.2.1
 - Changed the image on devkyRD credit
 - Fixed a bug on minibuttons opening after putting them on taskbar

@@ -18,6 +18,11 @@ type minibuttonOpt = {
 	destPosition?:Vec2;
 }
 
+/** Gets minibutton pos based on taskbar index
+ * 
+ * Accounts for extra win (will always have a taskbarindex of 4)
+ * @param taskbarIndex The task bar index
+ */
 export function getMinibuttonPos(taskbarIndex:number) {
 	if (taskbarIndex == 4) return vec2(width() - 40, height() - 40 - buttonSpacing)
 	return getPosInGrid(folderObj.pos, 0, -taskbarIndex - 1, vec2(75, 0))
@@ -283,11 +288,15 @@ export function addMinibutton(opts:minibuttonOpt) {
 		// the bigger the index the more to the ACTUAL left it will be
 		// -- to the right / ++ to the left
 		
+		const oldMinibuttonIndex = currentMinibutton.taskbarIndex
+		const oldDragginIndex = curDraggin.taskbarIndex
+		
 		// change it before they're swapped
-		GameState.taskbar[curDraggin.taskbarIndex] = currentMinibutton.windowKey
-		GameState.taskbar[currentMinibutton.taskbarIndex] = curDraggin.windowKey
-
-		swap(curDraggin, "taskbarIndex", currentMinibutton, "taskbarIndex")
+		GameState.taskbar[oldDragginIndex] = currentMinibutton.windowKey
+		GameState.taskbar[oldMinibuttonIndex] = curDraggin.windowKey
+		
+		currentMinibutton.taskbarIndex = oldDragginIndex
+		curDraggin.taskbarIndex = oldMinibuttonIndex
 
 		// sets position based on the new taskbarindex
 		let newXPos = getMinibuttonPos(currentMinibutton.taskbarIndex).x
@@ -337,6 +346,7 @@ export function addMinibutton(opts:minibuttonOpt) {
 	
 		currentMinibutton.onHoldRelease(() => {
 			if (curDraggin == currentMinibutton) {
+				currentMinibutton.destinedPosition.x = getMinibuttonPos(currentMinibutton.taskbarIndex).x
 				currentMinibutton.releaseDrop()
 			}
 		})

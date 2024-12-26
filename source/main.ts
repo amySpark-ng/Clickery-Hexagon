@@ -17,9 +17,9 @@ runInTauri(() => appWindow = getCurrentWebviewWindow())
 
 console.log(`appWindow: ` + appWindow)
 
-export let DEBUG = false
-export let enableNg = true
-export const GAME_VERSION = "1.2.1"
+export let DEBUG = true
+export let enableNg = false
+export const GAME_VERSION = "1.2.2"
 
 let kaplayOpts = {
 	width: 1024,
@@ -101,7 +101,7 @@ onLoad(() => {
 		volume(GameState.settings.volume)
 		addMouse()
 
-		if (!isFocused()) go("focuscene")
+		if (isFocused()) go("focuscene")
 		else {
 			if (enableNg == true) {
 				let loadingEvent = onDraw(() => {
