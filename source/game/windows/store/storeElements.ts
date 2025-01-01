@@ -133,7 +133,7 @@ function regularStoreElement(winParent:WindowGameObj) {
 
 function lockedPowerupStoreElement(winParent:WindowGameObj) {
 	let thisElement = null;
-	let progressSound = null;
+	let progressSound:ReturnType<typeof playSfx> = null;
 
 	const unlockPrice = storeElementsInfo.powerupsElement.unlockPrice
 	return {
@@ -343,7 +343,7 @@ export function addStoreElement(winParent:WindowGameObj, opts:storeElementOpt) {
 		const redPrice = RED.lighten(30) 
 
 		tooltip.tooltipText.onUpdate(() => {
-			if (GameState.score >= storeElementsInfo.powerupsElement.unlockPrice) tooltip.tooltipText.color = greenPrice
+			if (GameState.score >= btn.price) tooltip.tooltipText.color = greenPrice
 			else tooltip.tooltipText.color = redPrice  
 
 			tooltip.tooltipText.text = formatNumber(btn.price, { price: true })

@@ -127,7 +127,7 @@ export function addSlider(opts: sliderOpts) : sliderInterface {
 			},
 
 			releaseDrop() {
-				curDraggin.drop()
+				curDraggin?.drop()
 			},
 		}
 	])

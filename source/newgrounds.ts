@@ -47,14 +47,15 @@ export async function onLogIn(session: Session) {
 		data = deepMergeSaves(data, new _GameState()) as _GameState
 		
 		if (GameState.scoreAllTime > data.scoreAllTime) {
-			ng.setCloudData(1, JSON.stringify(GameState))
 			console.log("Current data is better than cloud, overwriting...")
+			ng.setCloudData(1, JSON.stringify(GameState))
 			return;
 		}
 
 		else {
 			console.log("Setting save to data in cloud save: ", data)
 			Object.assign(GameState, data)
+			GameState.save(false)
 		}
 	}
 

@@ -267,8 +267,6 @@ export const gamescene = () => scene("gamescene", async () => {
 	hasStartedGame = GameState.scoreAllTime > 1
 	ascension.ascending = false
 	allPowerupsInfo.isHoveringAPowerup = false
-	allObjWindows.isDraggingAWindow = false
-	allObjWindows.isHoveringAWindow = false
 
 	cam = {
 		pos: center(),

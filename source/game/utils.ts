@@ -414,20 +414,20 @@ export function debugTexts() {
 		return text
 	}
 
-	// add([
-	// 	text("DEBUG", { size: 18 }),
-	// 	anchor("botleft"),
-	// 	opacity(0.25),
-	// 	pos(0, height()),
-	// 	fixed(),
-	// 	layer("mouse"),
-	// 	{
-	// 		update() {
-	// 			const fps = ((Math.round((1/dt())*10))/10)
-	// 			this.text = "DEBUG" + ` ${fps}`
-	// 		}
-	// 	}
-	// ])
+	add([
+		text("DEBUG", { size: 18 }),
+		anchor("botleft"),
+		opacity(0.25),
+		pos(0, height()),
+		fixed(),
+		layer("mouse"),
+		{
+			update() {
+				const fps = ((Math.round((1/dt())*10))/10)
+				this.text = "DEBUG" + ` ${fps}`
+			}
+		}
+	])
 
 	let debugTexts = add([
 		text("", {
@@ -449,8 +449,6 @@ export function debugTexts() {
 					"Auto loop time: ": autoLoopTime.toFixed(2),
 					"Time until auto loop ends: ": GameState.timeUntilAutoLoopEnds,
 					"isHoveringPowerup": allPowerupsInfo.isHoveringAPowerup,
-					"isHoveringWindow": allObjWindows.isHoveringAWindow,
-					"isDraggingWindow": allObjWindows.isDraggingAWindow
 				}	
 
 				this.text = createKeys()

@@ -110,7 +110,7 @@ export function addXButton(windowParent:WindowGameObj) {
 	xButton.onClick(() => {
 		if (!windowParent.active) {
 			// if it's not dragging a window AND a window that is not this one is being hovered
-			if (!allObjWindows.isDraggingAWindow && !get("window").some(window => window.isHovering() && window != windowParent)) {
+			if (!get("window").some(window => window.isHovering() && window != windowParent)) {
 				windowParent.close()
 			}
 		}

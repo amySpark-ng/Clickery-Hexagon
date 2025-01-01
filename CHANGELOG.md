@@ -1,5 +1,11 @@
 # CLICKERY HEXAGON CHANGELOG
 
+## 1.2.3
+- Wrong color on the locked powerup element
+- Crash when opening the color windows related to draggings
+- Removed some unnecesary checkings related to window hovering and dragging
+Thanks mario for the bug reports...
+
 ## 1.2.2
 - Minibuttons weren't working properly in the taskbar
 

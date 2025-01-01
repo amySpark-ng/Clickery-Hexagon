@@ -29,8 +29,6 @@ export function addFolderObj() {
 	folded = true
 	timeSinceFold = 0
 	
-	allObjWindows.isHoveringAWindow = false;
-	allObjWindows.isDraggingAWindow = false;
 	allPowerupsInfo.isHoveringAPowerup = false;
 
 	movingMinibuttons = false;
@@ -199,19 +197,6 @@ export function addFolderObj() {
 		get("outsideHover").forEach((obj) => {
 			obj.trigger("cursorExitWindow")
 		})
-	})
-
-	theFolderObj.onUpdate(() => {
-		if ((get("window").length > 0)) {
-			// if any window is being hovered on
-			allObjWindows.isHoveringAWindow = get("window").some((window) => window.isMouseInRange())
-			allObjWindows.isDraggingAWindow = get("window").some((window) => window.dragging)
-		}
-
-		else {
-			allObjWindows.isHoveringAWindow = false
-			allObjWindows.isDraggingAWindow = false
-		}
 	})
 
 	// manages behaviour related to the closeest minibutton

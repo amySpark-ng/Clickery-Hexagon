@@ -30,7 +30,7 @@ export function addBackground() {
 
 				if (isMousePressed("right")) {
 					// doesn't check for hovering this because you will always be hovering it lol
-					if (!hexagon?.isHovering() && !get("folderObj")[0]?.isHovering() && !get("minibutton")[0]?.isHovering() && !get("window")[0]?.isHovering() && !allObjWindows.isDraggingAWindow) {
+					if (!hexagon?.isHovering() && !get("folderObj")[0]?.isHovering() && !get("minibutton")[0]?.isHovering() && !get("window")[0]?.isHovering()) {
 						manageWindow("bgColorWin")
 					}
 				}
