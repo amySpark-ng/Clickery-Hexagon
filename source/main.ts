@@ -17,7 +17,7 @@ runInTauri(() => appWindow = getCurrentWebviewWindow())
 
 console.log(`appWindow: ` + appWindow)
 
-export let DEBUG = true
+export let DEBUG = false
 export let enableNg = true
 export const GAME_VERSION = "1.2.3"
 

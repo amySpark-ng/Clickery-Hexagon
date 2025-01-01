@@ -4,6 +4,7 @@
 - Wrong color on the locked powerup element
 - Crash when opening the color windows related to draggings
 - Removed some unnecesary checkings related to window hovering and dragging
+- You can't double click powerups anymore
 Thanks mario for the bug reports...
 
 ## 1.2.2

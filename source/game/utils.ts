@@ -10,7 +10,7 @@ import { playSfx } from "../sound";
 import { ascension } from "./ascension/ascension";
 import { unlockWindow } from "./unlockables/windowUnlocks";
 import { mageDialogues } from "./ascension/dialogues";
-import { appWindow } from "../main";
+import { appWindow, DEBUG } from "../main";
 
 // definetely not stack overflow
 // dots are always for thousands, leave it like this
@@ -443,7 +443,7 @@ export function debugTexts() {
 		"debugText",
 		{
 			update() {
-				if (isKeyPressed("tab")) this.hidden = !this.hidden
+				this.hidden = !debug.inspect
 
 				keys = {
 					"Auto loop time: ": autoLoopTime.toFixed(2),

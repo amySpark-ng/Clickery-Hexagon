@@ -328,6 +328,7 @@ export function spawnPowerup(opts?:powerupOpt) {
 
 	const hoverScale = vec2(1.1)
 
+	let dead = false
 	let powerupObj = add([
 		sprite(`${opts.type}Powerup`),
 		pos(opts.pos),
@@ -368,6 +369,7 @@ export function spawnPowerup(opts?:powerupOpt) {
 				})
 			},
 			clickAnim() {
+				dead = true
 				this.area.scale = vec2(0)
 				tween(this.scale, hoverScale, 0.15, (p) => this.scale = p, easings.easeOutCubic)
 				tween(this.opacity, 0, 0.15, (p) => this.opacity = p, easings.easeOutCubic).onEnd(() => {
@@ -480,6 +482,7 @@ export function spawnPowerup(opts?:powerupOpt) {
 	})
 
 	powerupObj.onClick(() => {
+		if (dead == true) return;
 		powerupObj.click()
 	})
 
